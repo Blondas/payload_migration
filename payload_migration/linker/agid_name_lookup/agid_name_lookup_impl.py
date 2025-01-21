@@ -1,0 +1,23 @@
+from typing import Dict
+
+from payload_migration.agid_name_lookup.agid_name_lookup import AgidNameLookup
+from payload_migration.db2 import DB2Connection
+
+class AgidNameLookupImpl(AgidNameLookup):
+    def __init__(
+        self,
+        db2_connection: DB2Connection
+    ) -> None:
+        self._db2_connection = db2_connection
+        self._dict: Dict[str, str] = {}
+
+    def _fetch(self) -> None:
+        with self._db2_connection.connect() as connection:
+            query: str = "SELECT * FROM agid_names"
+            cursor = connection.cursor()
+            cursor.execute(query)
+            self._dict = dict(cursor.fetchall())
+
+    def dest_agid_name(self, src_agid_name: str) -> str:
+        default: str = "UNDEFINED"
+        return self._dict.get(src_agid_name, default)

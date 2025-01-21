@@ -1,0 +1,4 @@
+linker:
+  source_dir: "/ars/data/spool/output/A12345/slicer"
+  target_base_dir: "/ars/data/spool/output/A12345/linker"
+  file_pattern: "*"
