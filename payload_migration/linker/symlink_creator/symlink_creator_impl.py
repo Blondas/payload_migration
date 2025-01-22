@@ -2,8 +2,9 @@ from pathlib import Path
 from typing import Dict, Optional, List
 import logging
 
-from payload_migration.linker.path_transformer import PathTransformer
-from payload_migration.linker.symlink_creator import SymlinkCreator, SymlinkConfig
+from payload_migration.linker.path_transformer.path_transformer import PathTransformer
+from payload_migration.linker.symlink_creator.symlink_config import SymlinkConfig
+from payload_migration.linker.symlink_creator.symlink_creator import SymlinkCreator
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +27,7 @@ class SymlinkCreatorImpl(SymlinkCreator):
         results: Dict[Path, Optional[Exception]] = {}
         for source_file in self._get_source_files():
             try:
-                target_path = self._path_transformer.transform(source_file)
+                target_path = self._path_transformer.transform(source_file, self._config.target_base_dir)
                 SymlinkCreatorImpl._create_symlink(source_file, target_path)
                 results[source_file] = None
                 logging.debug(

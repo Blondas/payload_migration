@@ -3,7 +3,9 @@ from pathlib import Path
 from typing import Optional
 import yaml
 
-from payload_migration.linker.symlink_creator import SymlinkCreator, SymlinkCreatorImpl, SymlinkConfig
+from payload_migration.linker.symlink_creator.symlink_config import SymlinkConfig
+from payload_migration.linker.symlink_creator.symlink_creator import SymlinkCreator
+from payload_migration.linker.symlink_creator.symlink_creator_impl import SymlinkCreatorImpl
 
 logger = logging.getLogger(__name__)
 

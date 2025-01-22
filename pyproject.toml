@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "payload-migration"
+version = "0.1.0"
+description = "A specialized ETL tool that migrates and transforms mainframe virtual tape data from CMOD to HTC cloud storage. Handles low-level object extraction and cloud data migration processes with validation and logging capabilities."
+authors = [
+    {name = "Krzysiek Nowakowski",email = "knowakowski@pm.me"}
+]
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "exceptiongroup >= 1.2.2",
+    "ibm_db >= 3.2.5",
+    "iniconfig >= 2.0.0",
+    "packaging >= 24.2",
+    "pluggy >= 1.5.0",
+    "pytest >= 8.3.4",
+    "PyYAML >= 6.0.2",
+    "tomli >= 2.2.1",
+]
+
