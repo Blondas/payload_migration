@@ -3,7 +3,7 @@ import re
 from typing import Final
 import logging
 
-from payload_migration.linker.agid_name_lookup import AgidNameLookup
+from payload_migration.linker.agid_name_lookup.agid_name_lookup import AgidNameLookup
 from payload_migration.linker.path_transformer import PathTransformer
 
 logger = logging.getLogger(__name__)

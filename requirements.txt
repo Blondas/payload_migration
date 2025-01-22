@@ -8,5 +8,4 @@ PyYAML==6.0.2
 tomli==2.2.1
 
 pytest-bdd~=8.1.0
-ibm-db~=3.2.5
 pytest
