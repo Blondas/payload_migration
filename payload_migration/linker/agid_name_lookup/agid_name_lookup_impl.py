@@ -1,7 +1,8 @@
 from typing import Dict
 
-from payload_migration.agid_name_lookup.agid_name_lookup import AgidNameLookup
 from payload_migration.db2 import DB2Connection
+from payload_migration.linker.agid_name_lookup import AgidNameLookup
+
 
 class AgidNameLookupImpl(AgidNameLookup):
     def __init__(

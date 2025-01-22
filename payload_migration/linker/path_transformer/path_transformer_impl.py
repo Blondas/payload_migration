@@ -13,11 +13,9 @@ class PathTransformerImpl(PathTransformer):
 
     def __init__(
         self,
-        agid_name_lookup: AgidNameLookup,
-        step_name: str
+        agid_name_lookup: AgidNameLookup
     ):
         self._lookup = agid_name_lookup
-        self._step_name = step_name
 
     # object:
     # in:  {output_dir}/{tape_id}/{PREV_STEP_NAME}  /{agid_name_src}.{load_id}.{load_id_suffix}

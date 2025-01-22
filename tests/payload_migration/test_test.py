@@ -19,7 +19,7 @@ class User:
 
     @staticmethod
     def _is_valid_email(email: str) -> bool:
-        """Basic email validation."""
+        """Basica email validation."""
         if not email or '@' not in email:
             return False
         local, domain = email.rsplit('@', 1)
@@ -68,7 +68,7 @@ def user_service() -> UserService:
 @pytest.fixture
 def sample_user(user_service: UserService) -> User:
     """Provide a pre-created user."""
-    return user_service.create_user("test@example.com", "Test User")
+    return user_service.create_user("tests@example.com", "Test User")
 
 
 def test_create_user_success(user_service: UserService) -> None:
@@ -104,7 +104,7 @@ def test_get_user_by_email_not_found(user_service: UserService) -> None:
 @pytest.mark.parametrize("invalid_input", [
     ("", "Test User"),  # Empty email
     ("not_an_email", "Test User"),  # Invalid email format
-    ("test@example.com", ""),  # Empty name
+    ("tests@example.com", ""),  # Empty name
     ("@missing_username.com", "Test User"),  # Invalid email
     ("missing_domain@", "Test User"),  # Invalid email
 ])

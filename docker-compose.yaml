@@ -1,0 +1,8 @@
+# compose.yml
+services:
+  python-amd64-remote:
+    platform: linux/amd64
+    build: .
+    restart: always
+    volumes:
+      - .:/docker_remote_interpreter

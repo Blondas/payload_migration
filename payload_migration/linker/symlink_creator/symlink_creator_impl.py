@@ -2,9 +2,8 @@ from pathlib import Path
 from typing import Dict, Optional, List
 import logging
 
-from payload_migration.linker.path_transformer.path_transformer import PathTransformer
-from payload_migration.linker.symlink_creator.symlink_config import SymlinkConfig
-from payload_migration.linker.symlink_creator.symlink_creator import SymlinkCreator
+from payload_migration.linker.path_transformer import PathTransformer
+from payload_migration.linker.symlink_creator import SymlinkConfig, SymlinkCreator
 
 logger = logging.getLogger(__name__)
 
