@@ -1,42 +1,26 @@
 import logging
 from pathlib import Path
-from typing import Optional
-import yaml
 
-from payload_migration.linker.symlink_creator.symlink_config import SymlinkConfig
-from payload_migration.linker.symlink_creator.symlink_creator import SymlinkCreator
-from payload_migration.linker.symlink_creator.symlink_creator_impl import SymlinkCreatorImpl
+from payload_migration.config.payload_migration_config import PayloadMigrationConfig, load_config
+from payload_migration.db2 import DB2Connection
+from payload_migration.linker.agid_name_lookup.agid_name_lookup import AgidNameLookup
+from payload_migration.linker.agid_name_lookup.agid_name_lookup_impl import AgidNameLookupImpl
+from payload_migration.linker.path_transformer import PathTransformer, PathTransformerImpl
+from payload_migration.linker.symlink_creator import SymlinkCreator, SymlinkCreatorImpl
+from payload_migration.logging import logging_setup
 
 logger = logging.getLogger(__name__)
 
-def setup_logging():
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S'
-    )
-
-def load_config(config_path: Optional[str] = None) -> SymlinkConfig:
-    if config_path is None:
-        config_path = str(Path(__file__).parent / 'application_config.yaml')
-
-    with open(config_path) as f:
-        yaml_config = yaml.safe_load(f)
-
-    return SymlinkConfig(
-        source_dir=Path(yaml_config['linker']['source_dir']),
-        target_base_dir=Path(yaml_config['linker']['target_base_dir']),
-        file_pattern=yaml_config['linker']['file_pattern']
-    )
-
 if __name__ == '__main__':
-    setup_logging()
-    logger.info("main method")
+    logging_setup.setup_logging()
 
-    symlink_config: SymlinkConfig = SymlinkConfig(
-
-    )
-
+    config: PayloadMigrationConfig = load_config("./payload_migration/resources/payload_migration_config.yaml")
+    db2_connection: DB2Connection = DB2Connection()
+    agid_name_lookup: AgidNameLookup = AgidNameLookupImpl(db2_connection)
+    path_transformer: PathTransformer = PathTransformerImpl(agid_name_lookup)
     symlink_creator: SymlinkCreator = SymlinkCreatorImpl(
-
+        config.linker_config.source_dir,
+        config.linker_config.target_base_dir,
+        config.linker_config.file_pattern,
+        path_transformer
     )

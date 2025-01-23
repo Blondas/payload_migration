@@ -1,0 +1,10 @@
+db_config:
+  database: str
+  user: str
+  password: str
+
+linker_config:
+  source_dir: "/ars/data/spool/output/A12793/slicer"
+  target_base_dir: "/ars/data/spool/output/A12793/linker"
+  agid_name_lookup_table: "MIG_MAPPING"
+  file_pattern: '\w+\.\w+\.\w+|\w+\.\w+'

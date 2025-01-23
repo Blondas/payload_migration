@@ -25,7 +25,10 @@ class PathTransformerImpl(PathTransformer):
     # in:  {output_dir}/{tape_id}/{PREV_STEP_NAME}  /{agid_name_src}.{load_id}.{load_id_suffix}
     # out: {output_dir}/{tape_id}/{linker}          /{agid_name_dst}/RES/{load_id[1:]}
     def transform(self, path: Path, target_base_dir: Path) -> Path:
-
+        """Raises:
+           ValueError: If path has unsupported format (not object/resource pattern)
+           KeyError: If source AGID name lookup fails
+       """
         # in:  /ars/data/spool/output/A12345/slicer/AAG.L123.FAAA
         # out: /ars/data/spool/output/A12345/linker/SFB/123FAA/123FAAB
         is_object: bool = bool(re.match(r"\w+\.\w+\.\w+", path.name))
