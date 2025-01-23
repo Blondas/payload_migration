@@ -10,7 +10,6 @@ class DbConfig:
     user: str
     password: str
 
-
 @dataclass
 class LinkerConfig:
     source_dir: Path

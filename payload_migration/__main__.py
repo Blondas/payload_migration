@@ -15,7 +15,11 @@ if __name__ == '__main__':
     logging_setup.setup_logging()
 
     config: PayloadMigrationConfig = load_config("./payload_migration/resources/payload_migration_config.yaml")
-    db2_connection: DB2Connection = DB2Connection()
+    db2_connection: DB2Connection = DB2Connection(
+        config.db_config.database,
+        config.db_config.user,
+        config.db_config.password
+    )
     agid_name_lookup: AgidNameLookup = AgidNameLookupImpl(db2_connection)
     path_transformer: PathTransformer = PathTransformerImpl(agid_name_lookup)
     symlink_creator: SymlinkCreator = SymlinkCreatorImpl(
@@ -24,3 +28,5 @@ if __name__ == '__main__':
         config.linker_config.file_pattern,
         path_transformer
     )
+
+    symlink_creator.create_symlinks()
