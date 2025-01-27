@@ -1,12 +1,13 @@
 import logging
-from pathlib import Path
+
 
 from payload_migration.config.payload_migration_config import PayloadMigrationConfig, load_config
 from payload_migration.db2 import DB2Connection
 from payload_migration.linker.agid_name_lookup.agid_name_lookup import AgidNameLookup
 from payload_migration.linker.agid_name_lookup.agid_name_lookup_impl import AgidNameLookupImpl
 from payload_migration.linker.path_transformer import PathTransformer, PathTransformerImpl
-from payload_migration.linker.symlink_creator import SymlinkCreator, SymlinkCreatorImpl
+from payload_migration.linker.symlink_creator.symlink_creator import SymlinkCreator
+from payload_migration.linker.symlink_creator.symlink_creator_impl import SymlinkCreatorImpl
 from payload_migration.logging import logging_setup
 
 logger = logging.getLogger(__name__)

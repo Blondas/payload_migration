@@ -1,3 +1,4 @@
 - sprawdzic logike `threaded_symlink_creator_impl`
   - czy to co zwraca funkcja ma sens: _create_symlink
   - dodac sprawdzenie i rzucenie wyjatkiem jesli istnieje duplikat
+  - debug pattern matching in config - only * works

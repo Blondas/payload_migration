@@ -3,7 +3,7 @@ from typing import Dict, Optional, List
 import logging
 
 from payload_migration.linker.path_transformer import PathTransformer
-from payload_migration.linker.symlink_creator import SymlinkCreator
+from payload_migration.linker.symlink_creator.symlink_creator import SymlinkCreator
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +47,9 @@ class SymlinkCreatorImpl(SymlinkCreator):
         return results
 
     def _get_source_files(self) -> List[Path]:
-        return list(self._source_dir.glob(self._file_pattern))
+        src_files = list(self._source_dir.glob(self._file_pattern))
+        logger.debug(f"Found {len(src_files)} source files")
+        return src_files
 
     @staticmethod
     def _create_symlink(source_file: Path, target_path: Path) -> None:
@@ -58,4 +60,4 @@ class SymlinkCreatorImpl(SymlinkCreator):
         target_path.parent.mkdir(parents=True, exist_ok=True)
         if target_path.exists():
             raise FileExistsError(f"Target path already exists: {target_path}")
-        target_path.symlink_to(source_file)
+        target_path.link_to(source_file)
