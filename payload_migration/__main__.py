@@ -1,5 +1,5 @@
 import logging
-
+from pathlib import Path
 
 from payload_migration.config.payload_migration_config import PayloadMigrationConfig, load_config
 from payload_migration.db2 import DB2Connection
@@ -13,11 +13,12 @@ from payload_migration.logging import logging_setup
 logger = logging.getLogger(__name__)
 
 if __name__ == '__main__':
-    logging_setup.setup_logging()
+    logging_setup.setup_logging(Path('./log'), 'A12793')
+    logger.info("Starting migration")
 
     config: PayloadMigrationConfig = load_config("./payload_migration/resources/payload_migration_config.yaml")
     db2_connection: DB2Connection = DB2Connection(
-        config.db_config.database,
+        config.db_config.database_config,
         config.db_config.user,
         config.db_config.password
     )

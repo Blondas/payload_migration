@@ -1,3 +1,7 @@
+logging_config:
+  log_dir: './log'
+  log_label: 'A12793'
+
 db_config:
   database: 'database'
   user: 'user'

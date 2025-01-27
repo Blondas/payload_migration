@@ -5,8 +5,13 @@ from typing import Optional
 import yaml
 
 @dataclass
+class LoggingConfig:
+    log_dir: Path
+    log_label: str
+
+@dataclass
 class DbConfig:
-    database: str
+    database_config: str
     user: str
     password: str
 
@@ -19,6 +24,7 @@ class LinkerConfig:
 
 @dataclass
 class PayloadMigrationConfig:
+    logging_config: LoggingConfig
     db_config: DbConfig
     linker_config: LinkerConfig
 
@@ -31,8 +37,12 @@ def load_config(config_path: Optional[str] = None) -> PayloadMigrationConfig:
         yaml_config = yaml.safe_load(f)
 
     return PayloadMigrationConfig(
+        logging_config=LoggingConfig(
+            log_dir=Path(yaml_config['logging_config']['log_dir']),
+            log_label=yaml_config['logging_config']['log_label'],
+        ),
         db_config=DbConfig(
-          database=yaml_config['db_config']['database'],
+          database_config=yaml_config['db_config']['database'],
           user=yaml_config['db_config']['user'],
           password=yaml_config['db_config']['password']
         ),

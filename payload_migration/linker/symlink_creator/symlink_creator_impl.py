@@ -27,21 +27,12 @@ class SymlinkCreatorImpl(SymlinkCreator):
                 target_path = self._path_transformer.transform(source_file, self._target_base_dir)
                 SymlinkCreatorImpl._create_symlink(source_file, target_path)
                 results[source_file] = None
-                logging.debug(
-                    "Created symlink",
-                    extra={
-                        "source_file": source_file,
-                        "target_path": target_path
-                    }
-                 )
+                logging.debug(f"Created symlink, source_file={source_file}, target_path{target_path}")
             except Exception as e:
                 results[source_file] = e
                 logger.error(
-                    "Failed to create symlink",
-                    extra={
-                        "source_file": source_file
-                    },
-                    exc_info=e
+                    f"Failed to create symlink, source_file={source_file}, error_message={str(e)}",
+                    exc_info=True
                 )
 
         return results
