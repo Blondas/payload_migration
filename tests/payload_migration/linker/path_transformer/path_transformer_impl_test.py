@@ -3,7 +3,7 @@ from pathlib import Path
 from unittest.mock import Mock
 import pytest
 
-from payload_migration.linker.path_transformer import PathTransformerImpl
+from payload_migration.linker.path_transformer.path_transformer_impl import PathTransformerImpl
 
 # Feature and scenarios defined directly in the Python file
 FEATURE = """
@@ -35,7 +35,6 @@ def transformer(agid_name_lookup):
 class TestPathTransformation:
     """Path Transformation Tests"""
 
-    @pytest.mark.describe("When transforming an object path")
     def test_transform_object_path(self, transformer, agid_name_lookup):
         """Should correctly transform object path with proper format"""
         # Given
@@ -50,7 +49,6 @@ class TestPathTransformation:
         assert result == expected
         agid_name_lookup.dest_agid_name.assert_called_with("AAG")
 
-    @pytest.mark.describe("When transforming a resource path")
     def test_transform_resource_path(self, transformer, agid_name_lookup):
         """Should correctly transform resource path with proper format"""
         # Given
@@ -65,7 +63,6 @@ class TestPathTransformation:
         assert result == expected
         agid_name_lookup.dest_agid_name.assert_called_with("AAG")
 
-    @pytest.mark.describe("When handling invalid path format")
     def test_invalid_path_format(self, transformer):
         """Should raise ValueError for invalid path format"""
         # Given
@@ -76,7 +73,6 @@ class TestPathTransformation:
         with pytest.raises(ValueError, match="Unsupported path type"):
             transformer.transform(input_path, target_base)
 
-    @pytest.mark.describe("When transforming different path formats")
     @pytest.mark.parametrize("input_name,expected_suffix", [
         ("AAG.L123.FAAA", "123FAAA"),
         ("BBH.L456.FBBB", "456FBBB"),

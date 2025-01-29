@@ -1,7 +1,6 @@
 import logging
-from pathlib import Path
 
-from payload_migration.config import PayloadMigrationConfig, load_config
+from payload_migration.config.payload_migration_config import PayloadMigrationConfig, load_config
 from payload_migration.logging import logging_setup
 
 logger = logging.getLogger(__name__)
