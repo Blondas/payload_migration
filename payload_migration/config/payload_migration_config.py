@@ -20,7 +20,7 @@ class LinkerConfig:
     source_dir: Path
     target_base_dir: Path
     agid_name_lookup_table: str
-    file_pattern: str
+    file_patterns: [str]
 
 @dataclass
 class PayloadMigrationConfig:
@@ -50,6 +50,6 @@ def load_config(config_path: Optional[str] = None) -> PayloadMigrationConfig:
             source_dir=Path(yaml_config['linker_config']['source_dir']),
             target_base_dir=Path(yaml_config['linker_config']['target_base_dir']),
             agid_name_lookup_table=yaml_config['linker_config']['agid_name_lookup_table'],
-            file_pattern=yaml_config['linker_config']['file_pattern']
+            file_patterns=yaml_config['linker_config']['file_patterns']
         )
     )

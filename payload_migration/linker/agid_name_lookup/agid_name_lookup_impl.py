@@ -1,6 +1,6 @@
 from typing import Dict
 
-from payload_migration.db2 import DB2Connection
+from payload_migration.db2.db2_connection import DB2Connection
 from payload_migration.linker.agid_name_lookup.agid_name_lookup import AgidNameLookup
 
 

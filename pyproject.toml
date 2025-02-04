@@ -23,3 +23,8 @@ dependencies = [
 ]
 [tool.pytest]
 pythonpath=["."]
+
+# In pytest.ini or pyproject.toml
+[tool.pytest.ini_options]
+tmp_path_retention_count = 0
+tmp_path_retention_policy = "none"
