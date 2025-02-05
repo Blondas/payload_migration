@@ -1,9 +1,10 @@
 import logging
-from asyncio import as_completed
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+
 from botocore.exceptions import ClientError
 
+from payload_migration.uploader.upload_target import UploadTarget
 from payload_migration.uploader.hcp_uploader import HcpUploader
 from mypy_boto3_s3.service_resource import S3ServiceResource
 
@@ -13,34 +14,38 @@ class S3UploadError(Exception):
     pass
 
 class HcpUploaderImpl(HcpUploader):
-    def __init__(self, s3: S3ServiceResource):
-        self._s3 = s3
-        
-        
-    def upload_file(
+    def __init__(
         self, 
+        s3: S3ServiceResource,
+        max_workers: int,
+        bucket: str
+    ):
+        self._s3 = s3
+        self._max_workers = max_workers
+        self._bucket = bucket
+        
+         
+    def _upload_file(
+        self,
         file_path: Path,
-        bucket: str, 
         object_name: str
     ) -> None:
         try:
-            # s3 = boto3.resource('s3')
-            self._s3.Bucket(bucket).upload_file(str(file_path), object_name)
+            self._s3.Bucket(self._bucket).upload_file(str(file_path), object_name)
         except ClientError as e:
-            logging.error(f"Failed to upload {file_path}: {e}")
-            raise S3UploadError(f"Failed to upload {file_path}") from e
+            error_msg = f"Failed to upload {file_path} to {self._bucket}/{object_name}: {str(e)}"
+            logging.error(error_msg)
+            raise S3UploadError(error_msg) from e
 
-    def upload_files(
+    def _upload_files(
         self,
-        file_paths: list[Path], 
-        bucket: str, 
-        max_workers: int
+        upload_targets: list[UploadTarget]
     ) -> None:
-        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        with ThreadPoolExecutor(max_workers=self._max_workers) as executor:
             futures = [
                 # TODO change object name
-                executor.submit(self.upload_file, path, bucket, path.name) 
-                for path in file_paths
+                executor.submit(self._upload_file, target.local_path, target.s3_key) 
+                for target in upload_targets
             ]
             
             errors = []
@@ -58,17 +63,13 @@ class HcpUploaderImpl(HcpUploader):
         self,
         directory: Path
     ) -> None:
-        paths: list[tuple[Path, Path]] = [
-            (f, f.relative_to(directory))
+        upload_targets: list[UploadTarget] = [
+            UploadTarget(
+                local_path=f,
+                s3_key=str(f.relative_to(directory))
+            )
             for f in directory.rglob('*') 
             if f.is_file()
         ]
         
-        for absolute_path, relative_path, f2 in paths:
-            self.upload_file(absolute_path, 'foo', relative_path)
-            
-# TODO:
-# - dokonczyc i sprawdzic obecna logike
-# - czy upload_files mozna napisac zgrabniej
-# - przetestowac czy tworzy subfoldery tak jak chce  
-# - dorobic nie sprawdzanie certyfikatu SSL
+        self._upload_files(upload_targets)

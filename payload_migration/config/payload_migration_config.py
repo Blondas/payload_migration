@@ -21,12 +21,18 @@ class LinkerConfig:
     target_base_dir: Path
     agid_name_lookup_table: str
     file_patterns: [str]
+    
+@dataclass
+class UploaderConfig:
+    max_workers: int
+    bucket: str
 
 @dataclass
 class PayloadMigrationConfig:
     logging_config: LoggingConfig
     db_config: DbConfig
     linker_config: LinkerConfig
+    uploader_config: UploaderConfig
 
 
 def load_config(config_path: Optional[str] = None) -> PayloadMigrationConfig:
@@ -51,5 +57,9 @@ def load_config(config_path: Optional[str] = None) -> PayloadMigrationConfig:
             target_base_dir=Path(yaml_config['linker_config']['target_base_dir']),
             agid_name_lookup_table=yaml_config['linker_config']['agid_name_lookup_table'],
             file_patterns=yaml_config['linker_config']['file_patterns']
+        ),
+        uploader_config=UploaderConfig(
+            max_workers=yaml_config['uploader_config']['max_workers'],
+            bucket=yaml_config['uploader_config']['bucket'],
         )
     )

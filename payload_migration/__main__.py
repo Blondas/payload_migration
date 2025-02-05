@@ -1,6 +1,9 @@
 import logging
 from pathlib import Path
 
+import boto3
+from mypy_boto3_s3.service_resource import S3ServiceResource
+
 from payload_migration.config.payload_migration_config import PayloadMigrationConfig, load_config
 from payload_migration.db2.db2_connection_impl import DB2ConnectionImpl
 from payload_migration.db2.db_connection import DBConnection
@@ -11,6 +14,8 @@ from payload_migration.linker.link_creator.link_creator_impl import LinkCreatorI
 from payload_migration.linker.path_transformer.path_transformer import PathTransformer
 from payload_migration.linker.path_transformer.path_transformer_impl import PathTransformerImpl
 from payload_migration.logging import logging_setup
+from payload_migration.uploader.hcp_uploader import HcpUploader
+from payload_migration.uploader.hcp_uploader_impl import HcpUploaderImpl
 
 logger = logging.getLogger(__name__)
 
@@ -33,4 +38,12 @@ if __name__ == '__main__':
         path_transformer
     )
 
+    s3: S3ServiceResource = boto3.resource('s3')
+    hcp_uploader: HcpUploader = HcpUploaderImpl(
+        s3, 
+        config.uploader_config.max_workers, 
+        config.uploader_config.bucket
+    )
+
     link_creator.create_links()
+    hcp_uploader.upload_dir(config.linker_config.target_base_dir)

@@ -1,22 +1,11 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
 
-
 class HcpUploader(ABC):
     @abstractmethod
-    def upload_file(
-        self,
-        file_path: Path,
-        bucket: str,
-        object_name: str
-    ) -> None:
-        pass
 
-    @abstractmethod
-    def upload_files(
+    def upload_dir(
         self,
-        file_paths: list[Path],
-        bucket: str,
-        max_workers: int
+        directory: Path
     ) -> None:
         pass
