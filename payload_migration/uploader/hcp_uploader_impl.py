@@ -18,11 +18,13 @@ class HcpUploaderImpl(HcpUploader):
         self, 
         s3: S3ServiceResource,
         max_workers: int,
-        bucket: str
+        s3_bucket: str, 
+        s3_prefix: str
     ):
         self._s3 = s3
         self._max_workers = max_workers
-        self._bucket = bucket
+        self._s3_bucket = s3_bucket
+        self._s3_prefix = s3_prefix
         
          
     def _upload_file(
@@ -31,9 +33,9 @@ class HcpUploaderImpl(HcpUploader):
         object_name: str
     ) -> None:
         try:
-            self._s3.Bucket(self._bucket).upload_file(str(file_path), object_name)
+            self._s3.Bucket(self._s3_bucket).upload_file(str(file_path), object_name)
         except ClientError as e:
-            error_msg = f"Failed to upload {file_path} to {self._bucket}/{object_name}: {str(e)}"
+            error_msg = f"Failed to upload {file_path} to {self._s3_bucket}/{object_name}: {str(e)}"
             logging.error(error_msg)
             raise S3UploadError(error_msg) from e
 
@@ -66,7 +68,8 @@ class HcpUploaderImpl(HcpUploader):
         upload_targets: list[UploadTarget] = [
             UploadTarget(
                 local_path=f,
-                s3_key=str(f.relative_to(directory))
+                # s3_key=str(f.relative_to(directory))
+                s3_key=str(Path(self._s3_prefix) / f.relative_to(directory))
             )
             for f in directory.rglob('*') 
             if f.is_file()

@@ -25,7 +25,8 @@ class LinkerConfig:
 @dataclass
 class UploaderConfig:
     max_workers: int
-    bucket: str
+    s3_bucket: str
+    s3_prefix: str
 
 @dataclass
 class PayloadMigrationConfig:
@@ -60,6 +61,7 @@ def load_config(config_path: Optional[str] = None) -> PayloadMigrationConfig:
         ),
         uploader_config=UploaderConfig(
             max_workers=yaml_config['uploader_config']['max_workers'],
-            bucket=yaml_config['uploader_config']['bucket'],
+            s3_bucket=yaml_config['uploader_config']['s3_bucket'],
+            s3_prefix=yaml_config['uploader_config']['s3_prefix'],
         )
     )

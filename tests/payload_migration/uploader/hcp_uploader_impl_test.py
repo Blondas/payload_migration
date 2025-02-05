@@ -17,7 +17,7 @@ def mock_s3_resource() -> MagicMock:
 
 @pytest.fixture
 def uploader(mock_s3_resource: Mock) -> HcpUploaderImpl:
-    return HcpUploaderImpl(s3=mock_s3_resource, max_workers=2, bucket='test-bucket')
+    return HcpUploaderImpl(s3=mock_s3_resource, max_workers=2, s3_bucket='test-bucket', s3_prefix='test-prefix')
 
 
 @pytest.fixture
@@ -130,8 +130,8 @@ class TestHcpUploaderImpl:
         print(calls)
         uploaded_s3_keys = [call[0][1] for call in calls]
         assert set(uploaded_s3_keys) == {
-            'subdir_1/file1_1',
-             'subdir_1/file1_2',
-             'subdir_2a/subdir_2b/file2_1',
-             'subdir_2a/subdir_2b/file2_2'
+            'test-prefix/subdir_1/file1_1',
+             'test-prefix/subdir_1/file1_2',
+             'test-prefix/subdir_2a/subdir_2b/file2_1',
+             'test-prefix/subdir_2a/subdir_2b/file2_2'
         }
