@@ -1,5 +1,4 @@
 import logging
-from pathlib import Path
 
 import boto3
 from mypy_boto3_s3.service_resource import S3ServiceResource
@@ -20,10 +19,11 @@ from payload_migration.uploader.hcp_uploader_impl import HcpUploaderImpl
 logger = logging.getLogger(__name__)
 
 if __name__ == '__main__':
-    logging_setup.setup_logging(Path('./log'), 'A12793')
-    logger.info("Starting migration")
-
     config: PayloadMigrationConfig = load_config("./payload_migration/resources/payload_migration_config.yaml")
+
+    logging_setup.setup_logging(config.logging_config)
+    logger.info("Starting migration")
+    
     db2_connection: DBConnection = DB2ConnectionImpl(
         config.db_config.database_config,
         config.db_config.user,
@@ -42,7 +42,8 @@ if __name__ == '__main__':
     hcp_uploader: HcpUploader = HcpUploaderImpl(
         s3, 
         config.uploader_config.max_workers, 
-        config.uploader_config.bucket
+        config.uploader_config.s3_bucket,
+        config.uploader_config.s3_prefix
     )
 
     link_creator.create_links()
