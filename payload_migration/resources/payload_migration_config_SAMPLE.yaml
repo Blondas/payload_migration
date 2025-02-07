@@ -12,3 +12,12 @@ linker_config:
   target_base_dir: "/foo/output/tape_id/linker"
   agid_name_lookup_table: "table_name"
   file_patterns: ['[A-Z0-9]*.[A-Z0-9]*.[A-Z0-9]*', '[A-Z0-9]*.[A-Z0-9]*.[A-Z0-9]*']
+
+uploader_config:
+  endpoint_url: 'https://example.com'
+  verify_ssl: false
+  aws_access_key_id: 'ACCESS_KEY'
+  aws_secret_access_key: 'SECRET'
+  max_workers: 32
+  s3_bucket: 'sample-bucket'
+  s3_prefix: 'sample/prefix'
