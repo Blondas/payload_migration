@@ -1,0 +1,6 @@
+boto3==1.36.8
+botocore==1.36.8
+ibm_db==3.2.3
+mypy_boto3_s3==1.36.9
+PyYAML==6.0.2
+PyYAML==6.0.2

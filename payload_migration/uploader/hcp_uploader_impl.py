@@ -33,6 +33,15 @@ class HcpUploaderImpl(HcpUploader):
         object_name: str
     ) -> None:
         try:
+            # with open(file_path, "rb") as file_obj:
+            #     file_size = file_path.stat().st_size
+            #     self._s3.Bucket(self._s3_bucket).put_object(
+            #         Key=object_name, 
+            #         Body=file_obj,
+            #         ContentLength=file_size,
+            #     )
+             
+            logger.info(f"Uploading filename:{file_path}, bucket: {self._s3_bucket}, key: {object_name}")   
             self._s3.Bucket(self._s3_bucket).upload_file(str(file_path), object_name)
         except ClientError as e:
             error_msg = f"Failed to upload {file_path} to {self._s3_bucket}/{object_name}: {str(e)}"
