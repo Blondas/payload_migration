@@ -16,7 +16,7 @@ class HcpUploaderAwsCliImpl(HcpUploader):
     def __init__(
         self,
         s3_bucket: str,
-        s3_prefix: str, 
+        s3_prefix: str,
         verify_ssl: bool
     ):
         self._s3_bucket = s3_bucket
@@ -40,13 +40,11 @@ class HcpUploaderAwsCliImpl(HcpUploader):
             "aws", "s3", "cp",
             source_path,
             destination,
-            "--recursive",
-            "--quiet",  
-            "--only-show-errors"
+            "--recursive"
         ]
 
-        if self._verify_ssl:
-            cmd.extend("--no-verify-ssl")
+        if not self._verify_ssl:
+            cmd.append("--no-verify-ssl")
 
         try:
             logger.info(f"Starting upload from {source_path} to {destination}, command executed: {' '.join(cmd)}")
