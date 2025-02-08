@@ -24,11 +24,7 @@ class LinkerConfig:
     
 @dataclass
 class UploaderConfig:
-    endpoint_url: str
     verify_ssl: bool
-    aws_access_key_id: str
-    aws_secret_access_key: str
-    max_workers: int
     s3_bucket: str
     s3_prefix: str
 
@@ -64,11 +60,7 @@ def load_config(config_path: Optional[str] = None) -> PayloadMigrationConfig:
             file_patterns=yaml_config['linker_config']['file_patterns']
         ),
         uploader_config=UploaderConfig(
-            endpoint_url=yaml_config['uploader_config']['endpoint_url'],
             verify_ssl=yaml_config['uploader_config']['verify_ssl'],
-            aws_access_key_id=yaml_config['uploader_config']['aws_access_key_id'],
-            aws_secret_access_key=yaml_config['uploader_config']['aws_secret_access_key'],
-            max_workers=yaml_config['uploader_config']['max_workers'],
             s3_bucket=yaml_config['uploader_config']['s3_bucket'],
             s3_prefix=yaml_config['uploader_config']['s3_prefix'],
         )
