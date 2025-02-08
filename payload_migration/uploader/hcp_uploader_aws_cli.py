@@ -3,6 +3,8 @@ import subprocess
 from pathlib import Path
 from typing import Optional
 
+from payload_migration.uploader.hcp_uploader import HcpUploader
+
 logger = logging.getLogger(__name__)
 
 
@@ -10,14 +12,16 @@ class CliS3UploadError(Exception):
     pass
 
 
-class HcpUploaderAwsCliImpl:
+class HcpUploaderAwsCliImpl(HcpUploader):
     def __init__(
         self,
         s3_bucket: str,
-        s3_prefix: str
+        s3_prefix: str, 
+        verify_ssl: bool
     ):
         self._s3_bucket = s3_bucket
         self._s3_prefix = s3_prefix
+        self._verify_ssl = verify_ssl
 
     def upload_dir(
         self,
@@ -34,21 +38,18 @@ class HcpUploaderAwsCliImpl:
 
         cmd = [
             "aws", "s3", "cp",
+            source_path,
+            destination,
             "--recursive",
             "--quiet",  
-            "--follow-symlinks",
-            "--metadata-directive", "COPY",
-            "--only-show-errors",  
-            source_path,
-            destination
+            "--only-show-errors"
         ]
 
-        # Add any extra arguments
-        if extra_args:
-            cmd.extend(extra_args)
+        if self._verify_ssl:
+            cmd.extend("--no-verify-ssl")
 
         try:
-            logger.info(f"Starting upload from {source_path} to {destination}")
+            logger.info(f"Starting upload from {source_path} to {destination}, command executed: {' '.join(cmd)}")
 
             # Run the AWS CLI command
             result = subprocess.run(
@@ -71,37 +72,3 @@ class HcpUploaderAwsCliImpl:
             error_msg = f"Unexpected error during upload: {str(e)}"
             logger.error(error_msg)
             raise CliS3UploadError(error_msg) from e
-
-    @staticmethod
-    def get_upload_command(
-        source_dir: Path,
-        s3_bucket: str,
-        s3_prefix: str,
-        extra_args: Optional[list[str]] = None
-    ) -> list[str]:
-        """
-        Get the AWS CLI command that would be run (useful for debugging or manual execution)
-        """
-        source_path = str(source_dir)
-        if not source_path.endswith('/'):
-            source_path += '/'
-
-        destination = f"s3://{s3_bucket}/{s3_prefix}"
-        if not destination.endswith('/'):
-            destination += '/'
-
-        cmd = [
-            "aws", "s3", "cp",
-            "--recursive",
-            "--quiet",
-            "--follow-symlinks",
-            "--metadata-directive", "COPY",
-            "--only-show-errors",
-            source_path,
-            destination
-        ]
-
-        if extra_args:
-            cmd.extend(extra_args)
-
-        return cmd
