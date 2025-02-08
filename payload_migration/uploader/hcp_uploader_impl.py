@@ -6,7 +6,7 @@ from botocore.exceptions import ClientError
 
 from payload_migration.uploader.upload_target import UploadTarget
 from payload_migration.uploader.hcp_uploader import HcpUploader
-from mypy_boto3_s3.service_resource import S3ServiceResource
+# from mypy_boto3_s3.service_resource import S3ServiceResource
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +16,7 @@ class S3UploadError(Exception):
 class HcpUploaderImpl(HcpUploader):
     def __init__(
         self, 
-        s3: S3ServiceResource,
+        s3,
         max_workers: int,
         s3_bucket: str, 
         s3_prefix: str
