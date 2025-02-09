@@ -16,6 +16,15 @@ class DbConfig:
     password: str
 
 @dataclass
+class SlicerConfig:
+    slicer_path: Path
+    tape_location: Path
+    collection_name: str
+    output_directory: Path 
+    log_name: str
+    
+    
+@dataclass
 class LinkerConfig:
     source_dir: Path
     target_base_dir: Path
@@ -32,6 +41,7 @@ class UploaderConfig:
 class PayloadMigrationConfig:
     logging_config: LoggingConfig
     db_config: DbConfig
+    slicer_config: SlicerConfig
     linker_config: LinkerConfig
     uploader_config: UploaderConfig
 
@@ -52,6 +62,13 @@ def load_config(config_path: Optional[str] = None) -> PayloadMigrationConfig:
           database_config=yaml_config['db_config']['database'],
           user=yaml_config['db_config']['user'],
           password=yaml_config['db_config']['password']
+        ),
+        slicer_config=SlicerConfig(
+            slicer_path=Path(yaml_config['slicer_config']['slicer_path']),
+            tape_location=Path(yaml_config['slicer_config']['tape_location']),
+            collection_name=yaml_config['slicer_config']['collection_name'],
+            output_directory=Path(yaml_config['slicer_config']['output_directory']),
+            log_name=yaml_config['slicer_config']['log_name']
         ),
         linker_config=LinkerConfig(
             source_dir=Path(yaml_config['linker_config']['source_dir']),
