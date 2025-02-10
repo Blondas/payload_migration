@@ -18,6 +18,7 @@ from payload_migration.slicer.collection_name_lookup.collection_name_lookup impo
 from payload_migration.slicer.collection_name_lookup.collection_name_lookup_impl import CollectionNameLookupImpl
 from payload_migration.uploader.hcp_uploader import HcpUploader
 from payload_migration.uploader.hcp_uploader_aws_cli import HcpUploaderAwsCliImpl
+from payload_migration.utils.delete_path import delete_path
 
 logger = logging.getLogger(__name__)
 
@@ -77,10 +78,17 @@ if __name__ == '__main__':
     
     logger.info("Uploader finished ...")
     
+    start_time = time.time()
+    delete_path(payload_migration_config.slicer_config.output_directory.parent.parent)
+    deletion_duration = time.time() - start_time
+    
     logger.info(f""
                 f"Slicer duration: {slicer_duration}, "
                 f"Linker duration: {linker_duration}, "
-                f"Uploader duration: {uploader_duration}"
+                f"Uploader duration: {uploader_duration}, "
+                f"Deletion duration: {deletion_duration}"
     )
+    
+    logger.info(f"Processing tape {payload_migration_config.slicer_config.tape_location} finished.")
     
     
