@@ -2,7 +2,6 @@ import logging
 import time
 from pathlib import Path
 
-from payload_migration.db2.db_connection import DBConnection
 from payload_migration.linker.link_creator.link_creator import LinkCreator
 from payload_migration.slicer.slicer import Slicer
 from payload_migration.uploader.hcp_uploader import HcpUploader
@@ -14,7 +13,6 @@ logger = logging.getLogger(__name__)
 class TapeProcessorImpl(TapeProcessor):
     def __init__(
         self,
-        db_connection: DBConnection,
         slicer: Slicer,
         link_creator: LinkCreator,
         hcp_uploader: HcpUploader,
@@ -25,7 +23,6 @@ class TapeProcessorImpl(TapeProcessor):
         linker_output_directory: Path, 
         delete_output_tape_dir: bool
     ) -> None:
-        self._db_connection: DBConnection = db_connection
         self._slicer: Slicer = slicer
         self._link_creator: LinkCreator = link_creator
         self._hcp_uploader: HcpUploader = hcp_uploader

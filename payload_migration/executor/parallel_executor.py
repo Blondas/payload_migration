@@ -1,8 +1,8 @@
-import concurrent.futures
 from pathlib import Path
 
 from payload_migration.executor.executor import Executor
 from payload_migration.tape_processor.tape_processor_factory import TapeProcessorFactory
+from multiprocessing import Pool
 import logging
 
 logger = logging.getLogger(__name__)
@@ -26,5 +26,5 @@ class ParallelTapeExecutor(Executor):
         tape_names = [file.name for file in self._input_directory.glob('*') if file.is_file()]
         logger.info(f"Processing tapes: {tape_names}")
         
-        with concurrent.futures.ThreadPoolExecutor(max_workers=self._num_threads) as executor:
-            executor.map(self._process_tape, tape_names)
+        with Pool(processes=self._num_threads) as pool:
+            pool.map(self._process_tape, tape_names)
