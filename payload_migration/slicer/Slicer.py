@@ -8,8 +8,7 @@ class Slicer(ABC):
     @abstractmethod
     def execute(
         self, 
-        tape_location: Path, 
-        collection_name: str, 
+        tape_location: Path,
         output_directory: Path,
         log_location: Path
     ) -> None:

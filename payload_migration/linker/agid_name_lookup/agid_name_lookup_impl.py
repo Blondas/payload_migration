@@ -22,7 +22,7 @@ class AgidNameLookupImpl(AgidNameLookup):
         
         self._dict: Dict[str, str] = {
             k: v[0] 
-            for k, v in self._db2_connection.fetch(self._QUERY).items()
+            for k, v in self._db2_connection.fetch_all(self._QUERY).items()
         }
 
     def dest_agid_name(self, src_agid_name: str) -> str:

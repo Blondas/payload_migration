@@ -18,8 +18,7 @@ class DbConfig:
 @dataclass
 class SlicerConfig:
     slicer_path: Path
-    tape_location: Path
-    collection_name: str
+    tape_location: Path 
     output_directory: Path 
     log_name: str
     
@@ -66,7 +65,6 @@ def load_config(config_path: Optional[str] = None) -> PayloadMigrationConfig:
         slicer_config=SlicerConfig(
             slicer_path=Path(yaml_config['slicer_config']['slicer_path']),
             tape_location=Path(yaml_config['slicer_config']['tape_location']),
-            collection_name=yaml_config['slicer_config']['collection_name'],
             output_directory=Path(yaml_config['slicer_config']['output_directory']),
             log_name=yaml_config['slicer_config']['log_name']
         ),

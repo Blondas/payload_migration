@@ -47,10 +47,16 @@ class DB2ConnectionImpl(DBConnection):
             if conn is not None:
                 conn.close()
 
-    def fetch(self, query: str) -> Dict[str, tuple]:
+    def fetch_all(self, query: str) -> Dict[str, tuple]:
         with self._connect() as connection:
             cursor = connection.cursor()
             cursor.execute(query)
             return {row[0]: (row[1],) if len(row) == 2 else row[1:]
                     for row in cursor.fetchall()}
+        
+    def fetch_one(self, query: str) -> Optional[tuple]:
+        with self._connect() as connection:
+            cursor = connection.cursor()
+            cursor.execute(query)
+            return cursor.fetchone()
 

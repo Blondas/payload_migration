@@ -8,7 +8,7 @@ from payload_migration.linker.agid_name_lookup.agid_name_lookup_impl import Agid
 @pytest.fixture
 def mock_db_connection() -> MagicMock:
     connection = MagicMock(spec=DBConnection)
-    connection.fetch.return_value = {
+    connection.fetch_all.return_value = {
         "src1": ("dest1",),
         "src2": ("dest2",),
         "src3": ("dest3",)
@@ -25,7 +25,7 @@ class TestAgidNameLookupImpl:
         lookup = AgidNameLookupImpl(mock_db_connection)
     
         # Then
-        mock_db_connection.fetch.assert_called_once_with(
+        mock_db_connection.fetch_all.assert_called_once_with(
             "SELECT distinct(agid_name_src), agid_name_dst FROM mig_mapping"
         )
         assert lookup._dict == {
@@ -73,7 +73,7 @@ class TestAgidNameLookupImpl:
     def test_handles_empty_fetch_result(self) -> None:
         # Given
         connection = MagicMock(spec=DBConnection)
-        connection.fetch.return_value = {}
+        connection.fetch_all.return_value = {}
 
         # When
         lookup = AgidNameLookupImpl(connection)
@@ -85,7 +85,7 @@ class TestAgidNameLookupImpl:
     def test_initialization_with_multi_value_tuples(self) -> None:
         # Given
         connection = MagicMock(spec=DBConnection)
-        connection.fetch.return_value = {
+        connection.fetch_all.return_value = {
             "src1": ("dest1", "extra1", "more1"),
             "src2": ("dest2", "extra2")
         }

@@ -10,7 +10,6 @@ db_config:
 slicer_config:
   slicer_path: '/foo/slicer'
   tape_location: "/foo/input/tape_id"
-  collection_name: "collection_name"
   output_directory: "/foo/output/tape_id/slicer"
   log_name: "log_name"
 
