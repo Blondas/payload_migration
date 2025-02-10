@@ -55,7 +55,7 @@ def load_config(config_path: Optional[str] = None) -> PayloadMigrationConfig:
         output_base_dir=Path(yaml_config['output_base_dir']),
         delete_output_tape_dir=yaml_config['delete_output_tape_dir'],
         logging_config=LoggingConfig(
-            log_dubdir=yaml_config['logging_config']['log_subdir']
+            log_subdir=yaml_config['logging_config']['log_subdir']
         ),
         db_config=DbConfig(
           database_config=yaml_config['db_config']['database'],

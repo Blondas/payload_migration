@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 if __name__ == '__main__':
     payload_migration_config: PayloadMigrationConfig = load_config("./payload_migration/resources/payload_migration_config.yaml")
 
-    logging_setup.setup_logging(payload_migration_config.logging_config)
+    logging_setup.setup_logging(payload_migration_config.output_base_dir, payload_migration_config.logging_config.log_subdir)
     logger.info("Starting migration")
     
     db2_connection: DBConnection = DB2ConnectionImpl(

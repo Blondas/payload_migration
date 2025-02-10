@@ -1,12 +1,11 @@
 import logging
 from datetime import datetime
+from pathlib import Path
 
-from payload_migration.config.payload_migration_config import LoggingConfig
 
-
-def setup_logging(logging_config: LoggingConfig) -> None:
+def setup_logging(output_base_dir: Path, log_subdir: str) -> None:
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    log_file = logging_config.log_dir / f'payload_migration_{logging_config.log_label}_{timestamp}.log'
+    log_file = output_base_dir / log_subdir / f'payload_migration_{timestamp}.log'
     log_file.parent.mkdir(parents=True, exist_ok=True)
 
     formatter = logging.Formatter(
