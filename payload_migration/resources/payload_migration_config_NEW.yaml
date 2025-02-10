@@ -1,0 +1,25 @@
+input_dir: '/foo/bar/input'
+output_base_dir: '/foo/bar/output'
+delete_output_tape_dir: false
+
+logging_config:
+  log_subdir: 'log'
+
+db_config:
+  database: 'database'
+  user: 'user'
+  password: 'password'
+  
+slicer_config:
+  slicer_path: '/foo/slicer'
+  output_subdir: 'slicer'
+
+linker_config:
+  agid_name_lookup_table: 'table_name'
+  file_patterns: ['[A-Z0-9]*.[A-Z0-9]*.[A-Z0-9]*', '[A-Z0-9]*.[A-Z0-9]*']
+  output_subdir: 'linker'
+  
+uploader_config:
+  verify_ssl: false
+  s3_bucket: 'sample-bucket'
+  s3_prefix: 'sample/prefix'
