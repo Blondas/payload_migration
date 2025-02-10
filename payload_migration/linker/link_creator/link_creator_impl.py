@@ -35,14 +35,16 @@ class LinkCreatorImpl(LinkCreator):
                     exc_info=True
                 )
 
+        logger.info(f"Link creation completed: {len([v for v in results.values() if v is None])} successful, {len([v for v in results.values() if v is not None])} failed")
+        
         return results
 
     def _get_source_files(self) -> List[Path]:
-        src_files = [
+        src_files = list(set(
             src_file
             for pattern in self._file_patterns
             for src_file in self._source_dir.glob(pattern)
-        ]
+        ))
         logger.debug(f"Found {len(src_files)} source files")
         return src_files
 

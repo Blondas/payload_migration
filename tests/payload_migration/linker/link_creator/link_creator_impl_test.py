@@ -79,8 +79,6 @@ class TestLinkCreator:
         assert expected_target.stat().st_nlink == 2
         assert expected_target.stat().st_ino == source_file.stat().st_ino  # Verify same inode
 
-
-
     def test_create_hardlinks_target_exists(
         self,
         link_creator: LinkCreatorImpl,
@@ -120,6 +118,7 @@ class TestLinkCreator:
         ]],
         indirect=True
     )
+    
     def test_create_symlinks_pattern_matching(
         self,
         link_creator: LinkCreatorImpl,
@@ -167,4 +166,13 @@ class TestLinkCreator:
         assert isinstance(results[source_file], ValueError)
         mock_logger.error.assert_called_once()
         print(mock_logger.error.call_args)
+        
+    def test_get_source_files_deduplication(self, link_creator: LinkCreatorImpl, source_dir: Path):
+        with patch.object(Path, "glob", side_effect=[
+            [Path("/path/to/source/file1.txt")],
+            [Path("/path/to/source/file1.txt")]
+        ]):
+            source_files = link_creator._get_source_files()
+            assert len(source_files) == 1
+            assert source_files[0] == Path("/path/to/source/file1.txt")
         

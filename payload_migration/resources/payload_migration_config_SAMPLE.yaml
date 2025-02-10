@@ -6,12 +6,17 @@ db_config:
   database: 'database'
   user: 'user'
   password: 'password'
+  
+slicer_config:
+  slicer_path: '/foo/slicer'
+  tape_location: "/foo/input/tape_id"
+  output_directory: "/foo/output/tape_id/slicer"
+  log_name: "log_name"
 
 linker_config:
-  source_dir: "/foo/output/tape_id/slicer"
   target_base_dir: "/foo/output/tape_id/linker"
   agid_name_lookup_table: "table_name"
-  file_patterns: ['[A-Z0-9]*.[A-Z0-9]*.[A-Z0-9]*', '[A-Z0-9]*.[A-Z0-9]*.[A-Z0-9]*']
+  file_patterns: ['[A-Z0-9]*.[A-Z0-9]*.[A-Z0-9]*', '[A-Z0-9]*.[A-Z0-9]*']
 
 uploader_config:
   verify_ssl: false
