@@ -14,7 +14,6 @@ slicer_config:
   log_name: "log_name"
 
 linker_config:
-  source_dir: "/foo/output/tape_id/slicer"
   target_base_dir: "/foo/output/tape_id/linker"
   agid_name_lookup_table: "table_name"
   file_patterns: ['[A-Z0-9]*.[A-Z0-9]*.[A-Z0-9]*', '[A-Z0-9]*.[A-Z0-9]*']

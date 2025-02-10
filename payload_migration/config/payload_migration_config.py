@@ -25,7 +25,6 @@ class SlicerConfig:
     
 @dataclass
 class LinkerConfig:
-    source_dir: Path
     target_base_dir: Path
     agid_name_lookup_table: str
     file_patterns: [str]
@@ -69,7 +68,6 @@ def load_config(config_path: Optional[str] = None) -> PayloadMigrationConfig:
             log_name=yaml_config['slicer_config']['log_name']
         ),
         linker_config=LinkerConfig(
-            source_dir=Path(yaml_config['linker_config']['source_dir']),
             target_base_dir=Path(yaml_config['linker_config']['target_base_dir']),
             agid_name_lookup_table=yaml_config['linker_config']['agid_name_lookup_table'],
             file_patterns=yaml_config['linker_config']['file_patterns']

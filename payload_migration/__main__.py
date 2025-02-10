@@ -41,7 +41,7 @@ if __name__ == '__main__':
     agid_name_lookup: AgidNameLookup = AgidNameLookupImpl(db2_connection)
     path_transformer: PathTransformer = PathTransformerImpl(agid_name_lookup)
     link_creator: LinkCreator = LinkCreatorImpl(
-        payload_migration_config.linker_config.source_dir,
+        payload_migration_config.slicer_config.output_directory,
         payload_migration_config.linker_config.target_base_dir,
         payload_migration_config.linker_config.file_patterns,
         path_transformer
