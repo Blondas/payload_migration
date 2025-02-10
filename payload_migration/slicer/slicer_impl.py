@@ -1,7 +1,7 @@
 import os
 import subprocess
 from pathlib import Path
-from payload_migration.slicer.Slicer import Slicer
+from payload_migration.slicer.slicer import Slicer
 import logging
 
 from payload_migration.slicer.collection_name_lookup.collection_name_lookup import CollectionNameLookup

@@ -1,5 +1,6 @@
 import logging
 from pathlib import Path
+import time
 
 from payload_migration.config.payload_migration_config import PayloadMigrationConfig, load_config
 from payload_migration.db2.db2_connection_impl import DB2ConnectionImpl
@@ -11,8 +12,8 @@ from payload_migration.linker.link_creator.link_creator_impl import LinkCreatorI
 from payload_migration.linker.path_transformer.path_transformer import PathTransformer
 from payload_migration.linker.path_transformer.path_transformer_impl import PathTransformerImpl
 from payload_migration.logging import logging_setup
-from payload_migration.slicer.Slicer import Slicer
-from payload_migration.slicer.SlicerImpl import SlicerImpl
+from payload_migration.slicer.slicer import Slicer
+from payload_migration.slicer.slicer_impl import SlicerImpl
 from payload_migration.slicer.collection_name_lookup.collection_name_lookup import CollectionNameLookup
 from payload_migration.slicer.collection_name_lookup.collection_name_lookup_impl import CollectionNameLookupImpl
 from payload_migration.uploader.hcp_uploader import HcpUploader
@@ -53,17 +54,33 @@ if __name__ == '__main__':
     )
     
     logger.info("Slicer starting ...")
+    start_time = time.time()
     slicer_log: Path = payload_migration_config.logging_config.log_dir / payload_migration_config.slicer_config.log_name
     slicer.execute(
         payload_migration_config.slicer_config.tape_location,
         payload_migration_config.slicer_config.output_directory,
         slicer_log
     )
+    slicer_duration = time.time() - start_time
+    
     
     logger.info("Linker starting ...")
+    start_time = time.time()
     link_creator.create_links()
+    linker_duration = time.time() - start_time
+
 
     logger.info("Uploader started ...")
+    start_time = time.time()
     hcp_uploader.upload_dir(payload_migration_config.linker_config.target_base_dir)
+    uploader_duration = time.time() - start_time
     
     logger.info("Uploader finished ...")
+    
+    logger.info(f""
+                f"Slicer duration: {slicer_duration}, "
+                f"Linker duration: {linker_duration}, "
+                f"Uploader duration: {uploader_duration}"
+    )
+    
+    

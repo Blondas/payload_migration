@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import MagicMock, patch
 from pathlib import Path
-from payload_migration.slicer.SlicerImpl import SlicerImpl
+from payload_migration.slicer.slicer_impl import SlicerImpl
 from payload_migration.slicer.collection_name_lookup.collection_name_lookup import CollectionNameLookup
 from payload_migration.slicer.collection_name_lookup.collection_name_lookup_error import CollectionNameLookupError
 import subprocess

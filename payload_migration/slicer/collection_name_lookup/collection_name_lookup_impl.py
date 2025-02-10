@@ -25,4 +25,6 @@ class CollectionNameLookupImpl(CollectionNameLookup):
         maybe_collection_name = self._db2_connection.fetch_one(query)
         if maybe_collection_name is None:
             raise CollectionNameLookupError(f"Can not find collection name for tape: {tape_name}")
+        
+        logger.info(f"Collection name found for tape {tape_name} is {maybe_collection_name[0]}")
         return maybe_collection_name[0]
