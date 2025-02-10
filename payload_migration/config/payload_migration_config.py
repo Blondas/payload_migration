@@ -6,8 +6,7 @@ import yaml
 
 @dataclass
 class LoggingConfig:
-    log_dir: Path
-    log_label: str
+    log_subdir: str
 
 @dataclass
 class DbConfig:
@@ -18,16 +17,13 @@ class DbConfig:
 @dataclass
 class SlicerConfig:
     slicer_path: Path
-    tape_location: Path 
-    output_directory: Path 
-    log_name: str
-    
+    output_subdir: str 
     
 @dataclass
 class LinkerConfig:
-    target_base_dir: Path
     agid_name_lookup_table: str
     file_patterns: [str]
+    output_subdir: str
     
 @dataclass
 class UploaderConfig:
@@ -37,6 +33,9 @@ class UploaderConfig:
 
 @dataclass
 class PayloadMigrationConfig:
+    input_dir: Path
+    output_base_dir: Path
+    delete_output_tape_dir: bool
     logging_config: LoggingConfig
     db_config: DbConfig
     slicer_config: SlicerConfig
@@ -52,9 +51,11 @@ def load_config(config_path: Optional[str] = None) -> PayloadMigrationConfig:
         yaml_config = yaml.safe_load(f)
 
     return PayloadMigrationConfig(
+        input_dir=Path(yaml_config['input_dir']),
+        output_base_dir=Path(yaml_config['output_base_dir']),
+        delete_output_tape_dir=yaml_config['delete_output_tape_dir'],
         logging_config=LoggingConfig(
-            log_dir=Path(yaml_config['logging_config']['log_dir']),
-            log_label=yaml_config['logging_config']['log_label'],
+            log_dubdir=yaml_config['logging_config']['log_subdir']
         ),
         db_config=DbConfig(
           database_config=yaml_config['db_config']['database'],
@@ -63,14 +64,12 @@ def load_config(config_path: Optional[str] = None) -> PayloadMigrationConfig:
         ),
         slicer_config=SlicerConfig(
             slicer_path=Path(yaml_config['slicer_config']['slicer_path']),
-            tape_location=Path(yaml_config['slicer_config']['tape_location']),
-            output_directory=Path(yaml_config['slicer_config']['output_directory']),
-            log_name=yaml_config['slicer_config']['log_name']
+            output_subdir=yaml_config['slicer_config']['output_subdir']
         ),
         linker_config=LinkerConfig(
-            target_base_dir=Path(yaml_config['linker_config']['target_base_dir']),
             agid_name_lookup_table=yaml_config['linker_config']['agid_name_lookup_table'],
-            file_patterns=yaml_config['linker_config']['file_patterns']
+            file_patterns=yaml_config['linker_config']['file_patterns'],
+            output_subdir=yaml_config['linker_config']['output_subdir']
         ),
         uploader_config=UploaderConfig(
             verify_ssl=yaml_config['uploader_config']['verify_ssl'],
