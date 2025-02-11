@@ -20,7 +20,8 @@ if __name__ == '__main__':
     tape_executor: Executor = ParallelTapeExecutor(
         input_directory=payload_migration_config.input_dir,
         num_threads=10,
-        tape_processor_factory=tape_processor_factory
+        tape_processor_factory=tape_processor_factory,
+        payload_migration_config=payload_migration_config
     )
     
     tape_executor.run()

@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime
+from logging.handlers import WatchedFileHandler
 from pathlib import Path
 
 
@@ -9,7 +10,7 @@ def setup_logging(output_base_dir: Path, log_subdir: str) -> None:
     log_file.parent.mkdir(parents=True, exist_ok=True)
 
     formatter = logging.Formatter(
-        '%(asctime)s - %(levelname)s - %(message)s',
+        '%(asctime)s - %(levelname)s - %(processName)s - %(threadName)s - %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S'
     )
 
@@ -18,7 +19,7 @@ def setup_logging(output_base_dir: Path, log_subdir: str) -> None:
     console_handler.setFormatter(formatter)
 
     # File handler
-    file_handler = logging.FileHandler(log_file)
+    file_handler = WatchedFileHandler(str(log_file))  # Path needs to be converted to str
     file_handler.setFormatter(formatter)
 
     # Root logger
