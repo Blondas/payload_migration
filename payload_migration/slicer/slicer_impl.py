@@ -33,6 +33,8 @@ class SlicerImpl(Slicer):
         try:
             collection_name = self._collection_name_lookup.collection_name(self._get_tape_name(tape_location))
 
+            output_directory.mkdir(parents=True, exist_ok=True)
+            
             cmd = [
                 str(self._slicer_path),
                 str(tape_location),
