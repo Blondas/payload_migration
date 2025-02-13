@@ -14,12 +14,17 @@ from payload_migration.linker.path_transformer.path_transformer_impl import Path
 from payload_migration.logging import logging_setup
 from payload_migration.slicer.slicer import Slicer
 from payload_migration.slicer.slicer_impl import SlicerImpl
-from payload_migration.slicer.collection_name_lookup.collection_name_lookup import CollectionNameLookup
-from payload_migration.slicer.collection_name_lookup.collection_name_lookup_impl import CollectionNameLookupImpl
 from payload_migration.uploader.hcp_uploader import HcpUploader
 from payload_migration.uploader.hcp_uploader_aws_cli import HcpUploaderAwsCliImpl
+import argparse
 
 logger = logging.getLogger(__name__)
+
+def parse_args():
+    parser = argparse.ArgumentParser(description='Unit of work of payload migration. It process one tape in multiple steps: tape mainframe import, slice, verify sliced, lin, HCP upload')
+    parser.add_argument('--tape-name', type=Path, required=True, help='Tape Name (vTapeFile)')
+    parser.add_argument('--tape-name', type=str, required=True, help='Tape file location')
+    return parser.parse_args()
 
 if __name__ == '__main__':
     payload_migration_config: PayloadMigrationConfig = load_config("./payload_migration/resources/payload_migration_config.yaml")
@@ -33,10 +38,8 @@ if __name__ == '__main__':
         payload_migration_config.db_config.password
     )
 
-    collection_name_lookup: CollectionNameLookup = CollectionNameLookupImpl(db2_connection)
     slicer: Slicer = SlicerImpl(
-        payload_migration_config.slicer_config.slicer_path,
-        collection_name_lookup
+        payload_migration_config.slicer_config.slicer_path
     )
     agid_name_lookup: AgidNameLookup = AgidNameLookupImpl(db2_connection)
     path_transformer: PathTransformer = PathTransformerImpl(agid_name_lookup)

@@ -6,8 +6,7 @@ import yaml
 
 @dataclass
 class LoggingConfig:
-    log_dir: Path
-    log_label: str
+    log_file: Path
 
 @dataclass
 class DbConfig:
@@ -20,12 +19,11 @@ class SlicerConfig:
     slicer_path: Path
     tape_location: Path 
     output_directory: Path 
-    log_name: str
-    
-    
+    log_file: Path
+     
 @dataclass
 class LinkerConfig:
-    target_base_dir: Path
+    output_directory: Path
     agid_name_lookup_table: str
     file_patterns: [str]
     
@@ -53,8 +51,7 @@ def load_config(config_path: Optional[str] = None) -> PayloadMigrationConfig:
 
     return PayloadMigrationConfig(
         logging_config=LoggingConfig(
-            log_dir=Path(yaml_config['logging_config']['log_dir']),
-            log_label=yaml_config['logging_config']['log_label'],
+            log_file=Path(yaml_config['logging_config']['log_file'])
         ),
         db_config=DbConfig(
           database_config=yaml_config['db_config']['database'],
@@ -65,10 +62,10 @@ def load_config(config_path: Optional[str] = None) -> PayloadMigrationConfig:
             slicer_path=Path(yaml_config['slicer_config']['slicer_path']),
             tape_location=Path(yaml_config['slicer_config']['tape_location']),
             output_directory=Path(yaml_config['slicer_config']['output_directory']),
-            log_name=yaml_config['slicer_config']['log_name']
+            log_file=Path(yaml_config['slicer_config']['log_file'])
         ),
         linker_config=LinkerConfig(
-            target_base_dir=Path(yaml_config['linker_config']['target_base_dir']),
+            output_directory=Path(yaml_config['linker_config']['output_directory']),
             agid_name_lookup_table=yaml_config['linker_config']['agid_name_lookup_table'],
             file_patterns=yaml_config['linker_config']['file_patterns']
         ),
