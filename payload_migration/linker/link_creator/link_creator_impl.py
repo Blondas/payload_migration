@@ -11,12 +11,12 @@ class LinkCreatorImpl(LinkCreator):
     def __init__(
         self,
         source_dir: Path,
-        target_base_dir: Path,
+        output_directory: Path,
         file_patterns: list[str],
         path_transformer: PathTransformer
     ):
         self._source_dir: Path = source_dir
-        self._target_base_dir: Path = target_base_dir
+        self._output_directory: Path = output_directory
         self._file_patterns: list[str]= file_patterns
         self._path_transformer: PathTransformer  = path_transformer
 
@@ -24,7 +24,7 @@ class LinkCreatorImpl(LinkCreator):
         results: Dict[Path, Optional[Exception]] = {}
         for source_file in self._get_source_files():
             try:
-                target_path = self._path_transformer.transform(source_file, self._target_base_dir)                
+                target_path = self._path_transformer.transform(source_file, self._output_directory)                
                 LinkCreatorImpl._create_link(source_file, target_path)
                 results[source_file] = None
                 logging.debug(f"Created symlink, source_file={source_file}, target_path{target_path}")

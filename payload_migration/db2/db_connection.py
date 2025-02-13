@@ -10,4 +10,8 @@ class DBConnection(ABC):
     @abstractmethod
     def fetch_one(self, query: str) -> Optional[tuple]:
         pass
+    
+    @abstractmethod
+    def update(self, query: str) -> None:
+        pass
 

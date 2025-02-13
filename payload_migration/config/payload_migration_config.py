@@ -10,14 +10,13 @@ class LoggingConfig:
 
 @dataclass
 class DbConfig:
-    database_config: str
+    database: str
     user: str
     password: str
 
 @dataclass
 class SlicerConfig:
     slicer_path: Path
-    tape_location: Path 
     output_directory: Path 
     log_file: Path
      
@@ -35,6 +34,7 @@ class UploaderConfig:
 
 @dataclass
 class PayloadMigrationConfig:
+    tape_register_table: str
     logging_config: LoggingConfig
     db_config: DbConfig
     slicer_config: SlicerConfig
@@ -50,17 +50,17 @@ def load_config(config_path: Optional[str] = None) -> PayloadMigrationConfig:
         yaml_config = yaml.safe_load(f)
 
     return PayloadMigrationConfig(
+        tape_register_table=yaml_config['tape_register_table'],
         logging_config=LoggingConfig(
             log_file=Path(yaml_config['logging_config']['log_file'])
         ),
         db_config=DbConfig(
-          database_config=yaml_config['db_config']['database'],
+          database=yaml_config['db_config']['database'],
           user=yaml_config['db_config']['user'],
           password=yaml_config['db_config']['password']
         ),
         slicer_config=SlicerConfig(
             slicer_path=Path(yaml_config['slicer_config']['slicer_path']),
-            tape_location=Path(yaml_config['slicer_config']['tape_location']),
             output_directory=Path(yaml_config['slicer_config']['output_directory']),
             log_file=Path(yaml_config['slicer_config']['log_file'])
         ),
