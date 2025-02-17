@@ -37,7 +37,7 @@ if __name__ == '__main__':
     args = parse_args()
     payload_migration_config: PayloadMigrationConfig = load_config("./payload_migration/resources/payload_migration_config.yaml")
 
-    logging_setup.setup_logging(payload_migration_config.logging_config)
+    logging_setup.setup_logging(payload_migration_config.logging_config.log_file)
     logger.info(f"Starting unit of work, tape name: {args.tape_name}, tape location: {args.tape_location}")
     
     db2_connection: DBConnection = DB2ConnectionImpl(
