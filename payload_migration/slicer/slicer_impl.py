@@ -23,6 +23,8 @@ class SlicerImpl(Slicer):
         output_directory: Path,
         log_file: Path
     ) -> None:
+        log_file.parent.mkdir(parents=True, exist_ok=True)
+        output_directory.mkdir(parents=True, exist_ok=True)
 
         try:
             cmd = [

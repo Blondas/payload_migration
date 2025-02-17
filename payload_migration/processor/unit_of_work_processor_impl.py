@@ -43,12 +43,14 @@ class UnitOfWorkProcessorImpl(UnitOfWorkProcessor):
 
             logger.info(f"Uploader finished, working directory deleted, tape name: {tape_name}")
             logger.info(
-                f"Statistics for unit of work, tape name: {tape_name}, tape location: {tape_location}, "
-                f"Tape confirmer waiting time: {tape_confirmer_waiting_time}, "
-                f"Slicer duration: {slicer_duration}, "
-                f"Linker duration: {linker_duration}, "
-                f"Uploader duration: {uploader_duration}"
-                )
+                f"Statistics for unit of work: "
+                f"[tape={tape_name}] "
+                f"[location={tape_location}] "
+                f"[confirmer_wait={tape_confirmer_waiting_time}] "
+                f"[slicer={slicer_duration}] "
+                f"[linker={linker_duration}] "
+                f"[uploader={uploader_duration}]"
+            )
 
         except Exception as e:
             logger.error(f"Unit of work failed, tape name: {tape_name}, {str(e)}")
@@ -71,7 +73,7 @@ class UnitOfWorkProcessorImpl(UnitOfWorkProcessor):
             self._slicer.execute(
                 tape_location=tape_location,
                 output_directory=self._config.slicer_config.output_directory,
-                log_location=self._config.slicer_config.log_file
+                log_file=self._config.slicer_config.log_file
             )
             self._tape_register.set_status_sliced(tape_name)
             return time.time() - start_time

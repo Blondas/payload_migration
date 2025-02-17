@@ -7,6 +7,6 @@ class Slicer(ABC):
         self, 
         tape_location: Path,
         output_directory: Path,
-        log_location: Path
+        log_file: Path
     ) -> None:
         pass

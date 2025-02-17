@@ -14,7 +14,7 @@ class TapeImportConfirmerImpl(TapeImportConfirmer):
         self.check_interval: int = check_interval
 
     def wait_for_confirmation(self, tape_name: str, tape_location: Path) -> None:
-        confirmation_file: Path = tape_location.parent / f"{tape_name}.{self._ready_extension}"
+        confirmation_file: Path = tape_location.parent / f"{tape_name}{self._ready_extension}"
         start_time = time.time()
 
         while True:

@@ -7,30 +7,30 @@ from payload_migration.tape_register.tape_status import TapeStatus
 class TestTapeRegisterImpl(unittest.TestCase):
     def setUp(self):
         self.db_connection = MagicMock()
-        self.tape_register = TapeRegisterImpl(self.db_connection)
+        self.tape_register = TapeRegisterImpl(self.db_connection, "mig_taperegister")
 
     def test_set_status_failed_updates_status_to_failed(self):
         self.tape_register.set_status_failed("tape1")
         self.db_connection.update.assert_called_once_with(
-            f"UPDATE mig_taperegister SET status = '{TapeStatus.FAILED}' WHERE tape_name = tape1"
+            f"UPDATE mig_taperegister SET status = '{TapeStatus.FAILED}' WHERE volser = 'tape1'"
         )
 
     def test_set_status_sliced_updates_status_to_sliced(self):
         self.tape_register.set_status_sliced("tape2")
         self.db_connection.update.assert_called_once_with(
-            f"UPDATE mig_taperegister SET status = '{TapeStatus.SLICED}' WHERE tape_name = tape2"
+            f"UPDATE mig_taperegister SET status = '{TapeStatus.SLICED}' WHERE volser = 'tape2'"
         )
 
     def test_set_status_linked_updates_status_to_linked(self):
         self.tape_register.set_status_linked("tape3")
         self.db_connection.update.assert_called_once_with(
-            f"UPDATE mig_taperegister SET status = '{TapeStatus.LINKED}' WHERE tape_name = tape3"
+            f"UPDATE mig_taperegister SET status = '{TapeStatus.LINKED}' WHERE volser = 'tape3'"
         )
 
     def test_set_status_exported_updates_status_to_exported(self):
         self.tape_register.set_status_exported("tape4")
         self.db_connection.update.assert_called_once_with(
-            f"UPDATE mig_taperegister SET status = '{TapeStatus.EXPORTED}' WHERE tape_name = tape4"
+            f"UPDATE mig_taperegister SET status = '{TapeStatus.EXPORTED}' WHERE volser = 'tape4'"
         )
 
     @patch('payload_migration.tape_register.tape_register_impl.logger')

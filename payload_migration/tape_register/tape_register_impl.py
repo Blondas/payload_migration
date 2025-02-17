@@ -9,12 +9,14 @@ logger = logging.getLogger(__name__)
 class TapeRegisterImpl(TapeRegister):
     def __init__(
         self,
-        _db_connection: DBConnection         
+        _db_connection: DBConnection,
+        tape_register_table: str
     ) -> None:
         self._db2_connection = _db_connection
+        self._tape_register_table = tape_register_table
         
     def _set_status(self, tape_name: str, status: TapeStatus) -> None:
-        query = f"UPDATE mig_taperegister SET status = '{status}' WHERE tape_name = {tape_name}"
+        query = f"UPDATE {self._tape_register_table} SET status = '{status}' WHERE volser = '{tape_name}'"
         try:
             self._db2_connection.update(query)
         except Exception as e:

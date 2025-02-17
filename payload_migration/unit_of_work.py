@@ -45,15 +45,12 @@ if __name__ == '__main__':
         user = payload_migration_config.db_config.user,
         password = payload_migration_config.db_config.password
     )
-
     tape_register: TapeRegister = TapeRegisterImpl(db2_connection)
-    
     tape_import_confirmer: TapeImportConfirmer = TapeImportConfirmerImpl(
         ready_extension=payload_migration_config.tape_import_confirmer_config.ready_extension,
         timeout=payload_migration_config.tape_import_confirmer_config.timeout,
         check_interval=payload_migration_config.tape_import_confirmer_config.check_interval
     )
-
     slicer_log: Path = payload_migration_config.slicer_config.log_file
     slicer: Slicer = SlicerImpl(
         slicer_path = payload_migration_config.slicer_config.slicer_path

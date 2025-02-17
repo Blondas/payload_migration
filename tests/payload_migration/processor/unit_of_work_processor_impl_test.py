@@ -59,7 +59,7 @@ class TestUnitOfWorkProcessorImpl:
         processor._slicer.execute.assert_called_once_with(
             tape_location=tape_location,
             output_directory=processor._config.slicer_config.output_directory,
-            log_location=processor._config.slicer_config.log_file
+            log_file=processor._config.slicer_config.log_file  # Changed from log_location to log_file
         )
         processor._link_creator.create_links.assert_called_once()
         processor._hcp_uploader.upload_dir.assert_called_once_with(
