@@ -1,12 +1,8 @@
 import logging
-from datetime import datetime
-
-from payload_migration.config.payload_migration_config import LoggingConfig
+from pathlib import Path
 
 
-def setup_logging(logging_config: LoggingConfig) -> None:
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    log_file = logging_config.log_dir / f'payload_migration_{logging_config.log_label}_{timestamp}.log'
+def setup_logging(log_file: Path) -> None:
     log_file.parent.mkdir(parents=True, exist_ok=True)
 
     formatter = logging.Formatter(
@@ -24,6 +20,6 @@ def setup_logging(logging_config: LoggingConfig) -> None:
 
     # Root logger
     root_logger = logging.getLogger()
-    root_logger.setLevel(logging.DEBUG)
+    root_logger.setLevel(logging.INFO)
     root_logger.addHandler(console_handler)
     root_logger.addHandler(file_handler)

@@ -21,7 +21,7 @@ def link_creator(
 ) -> LinkCreatorImpl:
     return LinkCreatorImpl(
         source_dir=source_dir,
-        target_base_dir=target_base_dir,
+        output_directory=target_base_dir,
         file_patterns=file_patterns,
         path_transformer=path_transformer
     )
