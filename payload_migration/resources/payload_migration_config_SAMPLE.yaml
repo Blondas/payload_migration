@@ -8,6 +8,11 @@ db_config:
   user: 'user'
   password: 'password'
   
+tape_import_confirmer_config:
+  ready_extension: '.ready'
+  timeout: 60
+  check_interval: 1
+  
 slicer_config:
   slicer_path: '/foo/slicer'
   output_directory: "/foo/output/tape_id/slicer"

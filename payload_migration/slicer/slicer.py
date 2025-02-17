@@ -1,8 +1,5 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
-import logging
-
-logger = logging.getLogger(__name__)
 
 class Slicer(ABC):
     @abstractmethod

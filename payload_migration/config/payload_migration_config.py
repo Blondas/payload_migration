@@ -13,6 +13,12 @@ class DbConfig:
     database: str
     user: str
     password: str
+    
+@dataclass
+class TapeImportConfirmerConfig:
+    ready_extension: str
+    timeout: int
+    check_interval: int
 
 @dataclass
 class SlicerConfig:
@@ -37,6 +43,7 @@ class PayloadMigrationConfig:
     tape_register_table: str
     logging_config: LoggingConfig
     db_config: DbConfig
+    tape_import_confirmer_config: TapeImportConfirmerConfig
     slicer_config: SlicerConfig
     linker_config: LinkerConfig
     uploader_config: UploaderConfig
@@ -58,6 +65,11 @@ def load_config(config_path: Optional[str] = None) -> PayloadMigrationConfig:
           database=yaml_config['db_config']['database'],
           user=yaml_config['db_config']['user'],
           password=yaml_config['db_config']['password']
+        ),
+        tape_import_confirmer_config=TapeImportConfirmerConfig(
+            ready_extension=yaml_config['tape_import_confirmer_config']['ready_extension'],
+            timeout=yaml_config['tape_import_confirmer_config']['timeout'],
+            check_interval=yaml_config['tape_import_confirmer_config']['check_interval']
         ),
         slicer_config=SlicerConfig(
             slicer_path=Path(yaml_config['slicer_config']['slicer_path']),
