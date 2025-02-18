@@ -29,7 +29,6 @@ logger: Logger = logging.getLogger(__name__)
 def parse_args():
     parser = argparse.ArgumentParser(description='Unit of work of payload migration. It process one tape in multiple steps: tape mainframe import, slice, verify sliced, lin, HCP upload')
     parser.add_argument('--tape-name', type=str, required=True, help='Tape Name (vTapeFile)')
-    parser.add_argument('--tape-location', type=Path, required=True, help='Tape file location')
     return parser.parse_args()
     
 
@@ -38,7 +37,8 @@ if __name__ == '__main__':
     payload_migration_config: PayloadMigrationConfig = load_config("./payload_migration/resources/payload_migration_config.yaml")
 
     logging_setup.setup_logging(payload_migration_config.logging_config.log_file)
-    logger.info(f"Starting unit of work, tape name: {args.tape_name}, tape location: {args.tape_location}")
+    tape_location: Path = payload_migration_config.tape_import_confirmer_config.tape_directory / args.tape_name
+    logger.info(f"Starting unit of work, tape name: {args.tape_name}, tape location: {tape_location}")
     
     db2_connection: DBConnection = DB2ConnectionImpl(
         database = payload_migration_config.db_config.database,
@@ -79,5 +79,5 @@ if __name__ == '__main__':
         hcp_uploader = hcp_uploader
     )
     
-    processor.process(args.tape_name, args.tape_location)
+    processor.process(args.tape_name, tape_location)
     

@@ -16,6 +16,7 @@ class DbConfig:
     
 @dataclass
 class TapeImportConfirmerConfig:
+    tape_directory: Path
     ready_extension: str
     timeout: int
     check_interval: int
@@ -67,6 +68,7 @@ def load_config(config_path: Optional[str] = None) -> PayloadMigrationConfig:
           password=yaml_config['db_config']['password']
         ),
         tape_import_confirmer_config=TapeImportConfirmerConfig(
+            tape_directory=Path(yaml_config['tape_import_confirmer_config']['tape_directory']),
             ready_extension=yaml_config['tape_import_confirmer_config']['ready_extension'],
             timeout=yaml_config['tape_import_confirmer_config']['timeout'],
             check_interval=yaml_config['tape_import_confirmer_config']['check_interval']

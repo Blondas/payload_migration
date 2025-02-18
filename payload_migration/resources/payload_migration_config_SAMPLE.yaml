@@ -9,6 +9,7 @@ db_config:
   password: 'password'
   
 tape_import_confirmer_config:
+  tape_directory: '/foo/tapes'
   ready_extension: '.ready'
   timeout: 60
   check_interval: 1
