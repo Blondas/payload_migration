@@ -31,9 +31,14 @@ class TestSlicerImpl:
 
             # Verify subprocess.run call
             mock_run.assert_called_once_with(
-                ["/path/to/slicer", str(tape_location), str(output_directory), str(log_location)],
+                [
+                    "/path/to/slicer", 
+                    str(tape_location),  
+                    str(log_location)
+                ],
                 check=True,
-                text=True
+                text=True,
+                cwd=output_directory
             )
 
     def test_execute_subprocess_error(self, slicer_impl: SlicerImpl):

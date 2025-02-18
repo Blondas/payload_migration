@@ -30,7 +30,6 @@ class SlicerImpl(Slicer):
             cmd = [
                 str(self._slicer_path),
                 str(tape_location),
-                str(output_directory), 
                 str(log_file)
             ]
 
@@ -39,7 +38,8 @@ class SlicerImpl(Slicer):
             result = subprocess.run(
                 cmd,
                 check=True,
-                text=True
+                text=True,
+                cwd=output_directory
             )
 
             if result.stderr:
