@@ -61,6 +61,7 @@ class UnitOfWorkProcessorImpl(UnitOfWorkProcessor):
             logger.info(f"Tape record confirmer starting, tape name: {tape_name}")
             start_time = time.time()
             self._tape_import_confirmer.wait_for_confirmation(tape_name, tape_location)
+            self._tape_register.set_status_exported(tape_name)
             return time.time() - start_time
         except Exception as e:
             logger.error(f"Tape record confirmer wait failed, tape name: {tape_name}, tape location: {tape_location}, {str(e)}")
@@ -99,7 +100,7 @@ class UnitOfWorkProcessorImpl(UnitOfWorkProcessor):
             logger.info(f"Uploader started, tape name: {tape_name}")
             start_time = time.time()
             self._hcp_uploader.upload_dir(self._config.linker_config.output_directory)
-            self._tape_register.set_status_exported(tape_name)
+            self._tape_register.set_status_finished(tape_name)
             duration = time.time() - start_time
             delete_path(self._config.linker_config.output_directory, False)
             return duration

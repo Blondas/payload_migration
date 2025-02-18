@@ -67,9 +67,10 @@ class TestUnitOfWorkProcessorImpl:
         )
 
         # Verify status updates
+        processor._tape_register.set_status_exported.assert_called_once_with(tape_name)
         processor._tape_register.set_status_sliced.assert_called_once_with(tape_name)
         processor._tape_register.set_status_linked.assert_called_once_with(tape_name)
-        processor._tape_register.set_status_exported.assert_called_once_with(tape_name)
+        processor._tape_register.set_status_finished.assert_called_once_with(tape_name)
         processor._tape_register.set_status_failed.assert_not_called()
 
         # Verify cleanup calls
@@ -179,7 +180,7 @@ class TestUnitOfWorkProcessorImpl:
         mock_logger.error.assert_has_calls(expected_calls)
         assert mock_logger.error.call_count == 2
         processor._tape_register.set_status_failed.assert_called_once_with(tape_name)
-        processor._tape_register.set_status_exported.assert_not_called()
+        processor._tape_register.set_status_finished.assert_not_called()
 
     @patch('payload_migration.processor.unit_of_work_processor_impl.delete_path')
     def test_clean_working_dir_deletes_all_directories(

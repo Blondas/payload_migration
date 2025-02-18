@@ -34,4 +34,7 @@ class TapeRegisterImpl(TapeRegister):
 
     def set_status_exported(self, tape_name: str) -> None:
         self._set_status(tape_name, TapeStatus.EXPORTED)
+        
+    def set_status_finished(self, tape_name: str) -> None:
+        self._set_status(tape_name, TapeStatus.FINISHED)
 
