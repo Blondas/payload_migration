@@ -40,6 +40,10 @@ class UnitOfWorkProcessorImpl(UnitOfWorkProcessor):
             linker_duration: float = self._run_linker(tape_name)
             uploader_duration: float = self._run_uploader(tape_name)
             self._clean_working_dir()
+            self._clean_tape_and_tape_confirmation_file(
+                tape_location, 
+                self._tape_import_confirmer.get_tape_confirmation_file(tape_name, tape_location)
+            )
 
             logger.info(f"Uploader finished, working directory deleted, tape name: {tape_name}")
             logger.info(
@@ -112,5 +116,12 @@ class UnitOfWorkProcessorImpl(UnitOfWorkProcessor):
         for working_dir in [
             self._config.slicer_config.output_directory,
             self._config.linker_config.output_directory
+        ]:
+            delete_path(working_dir, True)
+        
+    def _clean_tape_and_tape_confirmation_file(self, tape: Path, tape_confirmation_file: Path) -> None:
+        for working_dir in [
+            tape,
+            tape_confirmation_file
         ]:
             delete_path(working_dir, True)

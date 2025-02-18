@@ -47,6 +47,8 @@ class TestUnitOfWorkProcessorImpl:
         # Given
         tape_name = "tape1"
         tape_location = Path("/path/to/tape1")
+        mock_confirmation_file = Path("/path/to/confirmation")
+        processor._tape_import_confirmer.get_tape_confirmation_file.return_value = mock_confirmation_file
         mock_time.side_effect = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]  # Start/end times for 4 operations
 
         # When
@@ -59,7 +61,7 @@ class TestUnitOfWorkProcessorImpl:
         processor._slicer.execute.assert_called_once_with(
             tape_location=tape_location,
             output_directory=processor._config.slicer_config.output_directory,
-            log_file=processor._config.slicer_config.log_file  # Changed from log_location to log_file
+            log_file=processor._config.slicer_config.log_file
         )
         processor._link_creator.create_links.assert_called_once()
         processor._hcp_uploader.upload_dir.assert_called_once_with(
@@ -74,7 +76,16 @@ class TestUnitOfWorkProcessorImpl:
         processor._tape_register.set_status_failed.assert_not_called()
 
         # Verify cleanup calls
-        assert mock_delete_path.call_count == 4  # Two during process + two in _clean_working_dir
+        expected_delete_calls = [
+            call(processor._config.slicer_config.output_directory, False),  # During _run_linker
+            call(processor._config.linker_config.output_directory, False),  # During _run_uploader
+            call(processor._config.slicer_config.output_directory, True),  # During _clean_working_dir
+            call(processor._config.linker_config.output_directory, True),  # During _clean_working_dir
+            call(tape_location, True),  # During _clean_tape_and_tape_confirmation_file
+            call(mock_confirmation_file, True)  # During _clean_tape_and_tape_confirmation_file
+        ]
+        assert mock_delete_path.call_count == 6
+        mock_delete_path.assert_has_calls(expected_delete_calls, any_order=True)
 
     @patch('payload_migration.processor.unit_of_work_processor_impl.logger')
     def test_process_logs_error_and_sets_status_failed_on_confirmer_failure(

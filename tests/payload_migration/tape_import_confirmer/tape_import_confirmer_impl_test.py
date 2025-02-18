@@ -33,3 +33,17 @@ class TestTapeImportConfirmerImpl:
         confirmer = TapeImportConfirmerImpl('READY', 1, 1)
         with pytest.raises(TimeoutError):
             confirmer.wait_for_confirmation(self.tape_name, self.path_to_tape)
+
+    def test_get_tape_confirmation_file_returns_correct_path(self) -> None:
+        # Given
+        confirmer = TapeImportConfirmerImpl('READY', 10, 1)
+        tape_name = "test_tape"
+        tape_location = Path("/path/to/test_tape")
+        expected_path = tape_location.parent / f"{tape_name}READY"
+
+        # When
+        result = confirmer.get_tape_confirmation_file(tape_name, tape_location)
+
+        # Then
+        assert result == expected_path
+        assert isinstance(result, Path)
