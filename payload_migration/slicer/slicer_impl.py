@@ -30,13 +30,9 @@ class SlicerImpl(Slicer):
             cmd = f'"{self._slicer_path}" "{tape_location}" 2>"{log_file}"'
             logger.info(f"Executing slicer command: {cmd}")
             
-            
-            
-            
             cmd = [
                 str(self._slicer_path),
-                str(tape_location),
-                str(log_file)
+                str(tape_location)
             ]
 
             logger.info(f"Executing slicer command: {' '.join(map(str, cmd))}")
