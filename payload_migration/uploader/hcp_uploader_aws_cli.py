@@ -40,6 +40,7 @@ class HcpUploaderAwsCliImpl(HcpUploader):
             "aws", "s3", "cp",
             source_path,
             destination,
+            "--no-progress",
             "--recursive"
         ]
 
@@ -47,7 +48,7 @@ class HcpUploaderAwsCliImpl(HcpUploader):
             cmd.append("--no-verify-ssl")
 
         try:
-            logger.info(f"Starting upload from {source_path} to {destination}, command executed: {' '.join(cmd)}")
+            logger.info(f"Starting upload, command executed: {' '.join(cmd)}")
 
             # Run the AWS CLI command
             result = subprocess.run(

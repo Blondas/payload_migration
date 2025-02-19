@@ -1,12 +1,11 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
-
-class Slicer(ABC):
+  
+class UnitOfWorkProcessor(ABC):
     @abstractmethod
-    def execute(
+    def process(
         self, 
-        tape_location: Path,
-        output_directory: Path,
-        log_file: Path
+        tape_name: str,
+        tape_location: Path
     ) -> None:
         pass

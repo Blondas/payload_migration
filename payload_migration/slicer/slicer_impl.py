@@ -4,10 +4,6 @@ from pathlib import Path
 from payload_migration.slicer.slicer import Slicer
 import logging
 
-from payload_migration.slicer.collection_name_lookup.collection_name_lookup import CollectionNameLookup
-from payload_migration.slicer.collection_name_lookup.collection_name_lookup_error import CollectionNameLookupError
-
-
 logger = logging.getLogger(__name__)
 
 
@@ -15,29 +11,27 @@ class SlicerImpl(Slicer):
     def __init__(
         self, 
         slicer_path: Path,
-        collection_name_lookup: CollectionNameLookup
     ):
         self._slicer_path: Path = slicer_path
         if not os.access(self._slicer_path, os.X_OK):
                     raise ValueError(f"Slicer path {self._slicer_path} is not executable")
-        
-        self._collection_name_lookup = collection_name_lookup
     
+
     def execute(
         self, 
         tape_location: Path,
         output_directory: Path,
-        log_location: Path
+        log_file: Path
     ) -> None:
+        log_file.parent.mkdir(parents=True, exist_ok=True)
+        output_directory.mkdir(parents=True, exist_ok=True)
 
         try:
-            collection_name = self._collection_name_lookup.collection_name(self._get_tape_name(tape_location))
-
             cmd = [
                 str(self._slicer_path),
                 str(tape_location),
-                collection_name,
-                str(output_directory)
+                str(output_directory),
+                str(log_file)
             ]
 
             logger.info(f"Executing slicer command: {' '.join(map(str, cmd))}")
@@ -45,7 +39,8 @@ class SlicerImpl(Slicer):
             result = subprocess.run(
                 cmd,
                 check=True,
-                text=True
+                text=True,
+                cwd=output_directory
             )
 
             if result.stderr:
@@ -53,8 +48,6 @@ class SlicerImpl(Slicer):
 
             logger.info("Command executed successfully")
 
-        except CollectionNameLookupError as e:
-            raise e
         except subprocess.CalledProcessError as e:
             error_msg = f"Slicer command failed: {e.stderr}"
             logger.error(error_msg)

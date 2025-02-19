@@ -60,3 +60,9 @@ class DB2ConnectionImpl(DBConnection):
             cursor.execute(query)
             return cursor.fetchone()
 
+    def update(self, query: str) -> None:
+        with self._connect() as connection:
+            cursor = connection.cursor()
+            cursor.execute(query)
+            connection.commit()
+
