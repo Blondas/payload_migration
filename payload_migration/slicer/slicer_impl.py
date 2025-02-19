@@ -16,7 +16,7 @@ class SlicerImpl(Slicer):
         if not os.access(self._slicer_path, os.X_OK):
                     raise ValueError(f"Slicer path {self._slicer_path} is not executable")
     
-    
+
     def execute(
         self, 
         tape_location: Path,
@@ -27,12 +27,10 @@ class SlicerImpl(Slicer):
         output_directory.mkdir(parents=True, exist_ok=True)
 
         try:
-            cmd = f'"{self._slicer_path}" "{tape_location}" 2>"{log_file}"'
-            logger.info(f"Executing slicer command: {cmd}")
-            
             cmd = [
                 str(self._slicer_path),
-                str(tape_location)
+                str(tape_location),
+                str(log_file)
             ]
 
             logger.info(f"Executing slicer command: {' '.join(map(str, cmd))}")
@@ -40,18 +38,19 @@ class SlicerImpl(Slicer):
             result = subprocess.run(
                 cmd,
                 check=True,
-                shell=True,  # Required for redirection
                 text=True,
                 cwd=output_directory
             )
 
+            if result.stderr:
+                logger.warning(f"Command executed with warnings: {result.stderr}")
+
             logger.info("Command executed successfully")
-            
-            if result.returncode not in [0,1]:
-                error_msg = f"Slicer command failed with exit code {e.returncode},  {e.stderr}"
-                logger.error(error_msg)
-                raise Exception(error_msg)
-                
+
+        except subprocess.CalledProcessError as e:
+            error_msg = f"Slicer command failed: {e.stderr}"
+            logger.error(error_msg)
+            raise Exception(error_msg) from e
         except Exception as e:
             error_msg = f"Unexpected error during Slicer command execution: {str(e)}"
             logger.error(error_msg)
