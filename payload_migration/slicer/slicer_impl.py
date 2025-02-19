@@ -50,11 +50,12 @@ class SlicerImpl(Slicer):
             )
 
             logger.info("Command executed successfully")
-
-        except subprocess.CalledProcessError as e:
-            error_msg = f"Slicer command failed with exit code {e.returncode},  {e.stderr}"
-            logger.error(error_msg)
-            raise Exception(error_msg) from e
+            
+            if result.returncode not in [0,1]:
+                error_msg = f"Slicer command failed with exit code {e.returncode},  {e.stderr}"
+                logger.error(error_msg)
+                raise Exception(error_msg)
+                
         except Exception as e:
             error_msg = f"Unexpected error during Slicer command execution: {str(e)}"
             logger.error(error_msg)
