@@ -10,6 +10,10 @@ class TapeRegister(ABC):
         pass
 
     @abstractmethod
+    def set_status_sanitized(self, tape_name: str) -> None:
+        pass
+
+    @abstractmethod
     def set_status_linked(self, tape_name: str) -> None:
         pass
 

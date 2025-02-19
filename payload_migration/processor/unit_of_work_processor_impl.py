@@ -3,6 +3,7 @@ from pathlib import Path
 import time
 from payload_migration.linker.link_creator.link_creator import LinkCreator
 from payload_migration.processor.unit_of_work_processor import UnitOfWorkProcessor
+from payload_migration.sanity_checker.sanity_checker import SanityChecker
 from payload_migration.slicer.slicer import Slicer
 from payload_migration.tape_import_confirmer.tape_import_confirmer import TapeImportConfirmer
 from payload_migration.tape_register.tape_register import TapeRegister
@@ -17,19 +18,23 @@ class UnitOfWorkProcessorImpl(UnitOfWorkProcessor):
         tape_import_confirmer: TapeImportConfirmer,
         tape_register: TapeRegister,
         slicer: Slicer,
+        sanity_checker: SanityChecker,
         link_creator: LinkCreator,
         hcp_uploader: HcpUploader,
         slicer_output_directory: Path,
         slicer_log: Path,
+        sanity_checker_log: Path,
         linked_output_directory: Path
     ):
         self._tape_register: TapeRegister = tape_register
         self._tape_import_confirmer: TapeImportConfirmer = tape_import_confirmer
         self._slicer: Slicer = slicer
+        self._sanity_checker: SanityChecker = sanity_checker
         self._link_creator: LinkCreator = link_creator
         self._hcp_uploader: HcpUploader = hcp_uploader
         self._slicer_output_directory: Path = slicer_output_directory
         self._slicer_log: Path = slicer_log
+        self._sanity_checker_log: Path = sanity_checker_log
         self._linker_output_directory = linked_output_directory
     def process(
         self, 
@@ -39,6 +44,7 @@ class UnitOfWorkProcessorImpl(UnitOfWorkProcessor):
         try:
             tape_confirmer_waiting_time: float = self._run_tape_import_confirmer(tape_name, tape_location)
             slicer_duration: float = self._run_slicer(tape_name, tape_location)
+            sanity_checker_duration: float = self._run_sanity_checker(tape_name)
             linker_duration: float = self._run_linker(tape_name)
             uploader_duration: float = self._run_uploader(tape_name)
             self._clean_working_dir()
@@ -54,6 +60,7 @@ class UnitOfWorkProcessorImpl(UnitOfWorkProcessor):
                 f"[location={tape_location}] "
                 f"[confirmer_wait={tape_confirmer_waiting_time}] "
                 f"[slicer={slicer_duration}] "
+                f"[sanity_checker={sanity_checker_duration}] "
                 f"[linker={linker_duration}] "
                 f"[uploader={uploader_duration}]"
             )
@@ -86,6 +93,22 @@ class UnitOfWorkProcessorImpl(UnitOfWorkProcessor):
             return time.time() - start_time
         except Exception as e:
             logger.error(f"Slicer failed, tape name: {tape_name}, {str(e)}")
+            raise
+        
+    def _run_sanity_checker(self, tape_name: str) -> float:
+        try:
+            logger.info(f"Sanity checker starting, tape name: {tape_name}")
+            start_time = time.time()
+            self._sanity_checker.execute(
+                tape_name=tape_name,
+                slicer_log=self._slicer_log,
+                slicer_output_directory=self._slicer_output_directory,
+                sanity_checker_log=self._sanity_checker_log
+            )
+            self._tape_register.set_status_sanitized(tape_name)
+            return time.time() - start_time
+        except Exception as e:
+            logger.error(f"Sanity checker failed, tape name: {tape_name}, {str(e)}")
             raise
 
     def _run_linker(self, tape_name: str) -> float:

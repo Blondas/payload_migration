@@ -14,6 +14,8 @@ from payload_migration.linker.path_transformer.path_transformer_impl import Path
 from payload_migration.logging import logging_setup
 from payload_migration.processor.unit_of_work_processor_impl import UnitOfWorkProcessorImpl
 from payload_migration.processor.unit_of_work_processor import UnitOfWorkProcessor
+from payload_migration.sanity_checker.sanity_checker import SanityChecker
+from payload_migration.sanity_checker.sanity_checker_impl import SanityCheckerImpl
 from payload_migration.slicer.slicer import Slicer
 from payload_migration.slicer.slicer_impl import SlicerImpl
 from payload_migration.tape_import_confirmer.tape_import_confirmer import TapeImportConfirmer
@@ -43,11 +45,11 @@ if __name__ == '__main__':
     linker_output_directory: Path = working_directory / 'linker'
     unit_our_work_log: Path = working_directory / 'log' / f'unit_of_work_{tape_name}.log'
     slicer_log: Path = working_directory / 'log' / f'slicer_{tape_name}.log'
+    sanity_checker_log: Path = working_directory / 'log' / f'sanity_checker_{tape_name}.log'
 
     logging_setup.setup_logging(unit_our_work_log)
     tape_location: Path = payload_migration_config.tape_import_confirmer_config.tape_directory / tape_name
     logger.info(f"Starting unit of work, tape name: {tape_name}, tape location: {tape_location}")
-    
     
     
     db2_connection: DBConnection = DB2ConnectionImpl(
@@ -63,6 +65,9 @@ if __name__ == '__main__':
     )
     slicer: Slicer = SlicerImpl(
         slicer_path = payload_migration_config.slicer_config.slicer_path
+    )
+    sanity_checker: SanityChecker = SanityCheckerImpl(
+        sanity_checker_path = payload_migration_config.sanity_checker_config.sanity_checker_path
     )
     agid_name_lookup: AgidNameLookup = AgidNameLookupImpl(db2_connection)
     path_transformer: PathTransformer = PathTransformerImpl(agid_name_lookup)
@@ -83,10 +88,12 @@ if __name__ == '__main__':
         tape_import_confirmer = tape_import_confirmer,
         tape_register = tape_register,
         slicer = slicer,
+        sanity_checker = sanity_checker,
         link_creator = link_creator,
         hcp_uploader = hcp_uploader,
         slicer_output_directory=slicer_output_directory,
         slicer_log=slicer_log,
+        sanity_checker_log=sanity_checker_log,
         linked_output_directory=linker_output_directory
     )
     

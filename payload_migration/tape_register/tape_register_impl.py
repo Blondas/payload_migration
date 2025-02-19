@@ -28,6 +28,9 @@ class TapeRegisterImpl(TapeRegister):
 
     def set_status_sliced(self, tape_name: str) -> None:
         self._set_status(tape_name, TapeStatus.SLICED)
+        
+    def set_status_sanitized(self, tape_name: str) -> None:
+        self._set_status(tape_name, TapeStatus.SANITIZED)
 
     def set_status_linked(self, tape_name: str) -> None:
         self._set_status(tape_name, TapeStatus.LINKED)

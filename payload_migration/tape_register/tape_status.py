@@ -6,6 +6,7 @@ class TapeStatus(Enum):
     NEW: str = "new"
     REQUESTED: str = "requested"
     SLICED: str = "sliced"
+    SANITIZED: str = "sanitized"
     LINKED: str = "linked"
     FINISHED: str = "finished"
     FAILED: str = "failed"
