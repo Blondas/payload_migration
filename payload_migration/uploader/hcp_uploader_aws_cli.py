@@ -40,7 +40,6 @@ class HcpUploaderAwsCliImpl(HcpUploader):
             "aws", "s3", "cp",
             source_path,
             destination,
-            "--quiet",
             "--no-progress",
             "--recursive"
         ]
