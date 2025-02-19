@@ -27,6 +27,12 @@ class SlicerImpl(Slicer):
         output_directory.mkdir(parents=True, exist_ok=True)
 
         try:
+            cmd = f'"{self._slicer_path}" "{tape_location}" 2>"{log_file}"'
+            logger.info(f"Executing slicer command: {cmd}")
+            
+            
+            
+            
             cmd = [
                 str(self._slicer_path),
                 str(tape_location),
@@ -38,17 +44,15 @@ class SlicerImpl(Slicer):
             result = subprocess.run(
                 cmd,
                 check=True,
+                shell=True,  # Required for redirection
                 text=True,
                 cwd=output_directory
             )
 
-            if result.stderr:
-                logger.warning(f"Command executed with warnings: {result.stderr}")
-
             logger.info("Command executed successfully")
 
         except subprocess.CalledProcessError as e:
-            error_msg = f"Slicer command failed: {e.stderr}"
+            error_msg = f"Slicer command failed with exit code {e.returncode},  {e.stderr}"
             logger.error(error_msg)
             raise Exception(error_msg) from e
         except Exception as e:

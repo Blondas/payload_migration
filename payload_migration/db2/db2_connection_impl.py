@@ -23,9 +23,7 @@ class DB2ConnectionImpl(DBConnection):
     def _connect(self) -> Generator[Connection, None, None]:
         conn: Optional[Connection] = None
         try:
-            conn_str: str = f'DATABASE={self._database};UID={self._user};PWD={self._password};ISOLATION_LEVEL=RR'
-            conn = connect(conn_str)
-            
+            conn = connect(self._database, self._user, self._password)
             yield conn
         except DB2Error as e:
             logger.error("DB2 connection error",
