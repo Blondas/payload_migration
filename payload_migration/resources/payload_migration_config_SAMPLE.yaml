@@ -1,7 +1,7 @@
 tape_register_table: 'db_tape_register_table'
-
+output_working_directory: '/foo/output/'
 logging_config:
-  log_file: './log'
+  log_file_name: 'unit_of_work.log'
 
 db_config:
   database: 'database'
@@ -16,11 +16,11 @@ tape_import_confirmer_config:
   
 slicer_config:
   slicer_path: '/foo/slicer'
-  output_directory: "/foo/output/tape_id/slicer"
-  log_file: "/foo/output/tape_id/slicer/slicer.log"
+#  output_directory: "/foo/output/tape_id/slicer"
+  log_file_name: "slicer.log"
 
 linker_config:
-  output_directory: "/foo/output/tape_id/linker"
+#  output_directory: "/foo/output/tape_id/linker"
   agid_name_lookup_table: "table_name"
   file_patterns: ['[A-Z0-9]*.[A-Z0-9]*.[A-Z0-9]*', '[A-Z0-9]*.[A-Z0-9]*']
 

@@ -35,10 +35,20 @@ def parse_args():
 if __name__ == '__main__':
     args = parse_args()
     payload_migration_config: PayloadMigrationConfig = load_config("./payload_migration/resources/payload_migration_config.yaml")
+    
+    tape_name: str = args.tape_name
+    
+    working_directory: Path = payload_migration_config.output_working_directory / tape_name
+    slicer_output_directory: Path = working_directory / 'slicer'
+    linker_output_directory: Path = working_directory / 'linker'
+    unit_our_work_log: Path = working_directory / 'log' / f'unit_of_work_{tape_name}.log'
+    slicer_log: Path = working_directory / 'log' / f'slicer_{tape_name}.log'
 
-    logging_setup.setup_logging(payload_migration_config.logging_config.log_file)
-    tape_location: Path = payload_migration_config.tape_import_confirmer_config.tape_directory / args.tape_name
-    logger.info(f"Starting unit of work, tape name: {args.tape_name}, tape location: {tape_location}")
+    logging_setup.setup_logging(unit_our_work_log)
+    tape_location: Path = payload_migration_config.tape_import_confirmer_config.tape_directory / tape_name
+    logger.info(f"Starting unit of work, tape name: {tape_name}, tape location: {tape_location}")
+    
+    
     
     db2_connection: DBConnection = DB2ConnectionImpl(
         database = payload_migration_config.db_config.database,
@@ -51,15 +61,14 @@ if __name__ == '__main__':
         timeout=payload_migration_config.tape_import_confirmer_config.timeout,
         check_interval=payload_migration_config.tape_import_confirmer_config.check_interval
     )
-    slicer_log: Path = payload_migration_config.slicer_config.log_file
     slicer: Slicer = SlicerImpl(
         slicer_path = payload_migration_config.slicer_config.slicer_path
     )
     agid_name_lookup: AgidNameLookup = AgidNameLookupImpl(db2_connection)
     path_transformer: PathTransformer = PathTransformerImpl(agid_name_lookup)
     link_creator: LinkCreator = LinkCreatorImpl(
-        source_dir = payload_migration_config.slicer_config.output_directory,
-        output_directory= payload_migration_config.linker_config.output_directory,
+        source_dir = slicer_output_directory,
+        output_directory= linker_output_directory,
         file_patterns = payload_migration_config.linker_config.file_patterns,
         path_transformer = path_transformer
     )
@@ -71,13 +80,16 @@ if __name__ == '__main__':
     )
     
     processor: UnitOfWorkProcessor = UnitOfWorkProcessorImpl(
-        config = payload_migration_config,
         tape_import_confirmer = tape_import_confirmer,
         tape_register = tape_register,
         slicer = slicer,
         link_creator = link_creator,
-        hcp_uploader = hcp_uploader
+        hcp_uploader = hcp_uploader,
+        slicer_output_directory=slicer_output_directory,
+        slicer_log=slicer_log,
+        linked_output_directory=linker_output_directory
     )
     
-    processor.process(args.tape_name, tape_location)
+    
+    processor.process(tape_name, tape_location)
     

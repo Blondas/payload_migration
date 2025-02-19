@@ -30,6 +30,7 @@ class SlicerImpl(Slicer):
             cmd = [
                 str(self._slicer_path),
                 str(tape_location),
+                str(output_directory),
                 str(log_file)
             ]
 

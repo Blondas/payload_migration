@@ -1,7 +1,6 @@
 import logging
 from pathlib import Path
 import time
-from payload_migration.config.payload_migration_config import PayloadMigrationConfig
 from payload_migration.linker.link_creator.link_creator import LinkCreator
 from payload_migration.processor.unit_of_work_processor import UnitOfWorkProcessor
 from payload_migration.slicer.slicer import Slicer
@@ -15,20 +14,23 @@ logger = logging.getLogger(__name__)
 class UnitOfWorkProcessorImpl(UnitOfWorkProcessor):
     def __init__(
         self,
-        config: PayloadMigrationConfig,
         tape_import_confirmer: TapeImportConfirmer,
         tape_register: TapeRegister,
         slicer: Slicer,
         link_creator: LinkCreator,
-        hcp_uploader: HcpUploader
+        hcp_uploader: HcpUploader,
+        slicer_output_directory: Path,
+        slicer_log: Path,
+        linked_output_directory: Path
     ):
-        self._config: PayloadMigrationConfig = config
         self._tape_register: TapeRegister = tape_register
         self._tape_import_confirmer: TapeImportConfirmer = tape_import_confirmer
         self._slicer: Slicer = slicer
         self._link_creator: LinkCreator = link_creator
         self._hcp_uploader: HcpUploader = hcp_uploader
-        
+        self._slicer_output_directory: Path = slicer_output_directory
+        self._slicer_log: Path = slicer_log
+        self._linker_output_directory = linked_output_directory
     def process(
         self, 
         tape_name: str,
@@ -77,8 +79,8 @@ class UnitOfWorkProcessorImpl(UnitOfWorkProcessor):
             start_time = time.time()
             self._slicer.execute(
                 tape_location=tape_location,
-                output_directory=self._config.slicer_config.output_directory,
-                log_file=self._config.slicer_config.log_file
+                output_directory=self._slicer_output_directory,
+                log_file=self._slicer_log
             )
             self._tape_register.set_status_sliced(tape_name)
             return time.time() - start_time
@@ -93,7 +95,7 @@ class UnitOfWorkProcessorImpl(UnitOfWorkProcessor):
             self._link_creator.create_links()
             self._tape_register.set_status_linked(tape_name)
             duration = time.time() - start_time
-            delete_path(self._config.slicer_config.output_directory, False)
+            delete_path(self._slicer_output_directory, False)
             return duration
         except Exception as e:
             logger.error(f"Linker failed, tape name: {tape_name} {str(e)}")
@@ -103,10 +105,10 @@ class UnitOfWorkProcessorImpl(UnitOfWorkProcessor):
         try:
             logger.info(f"Uploader started, tape name: {tape_name}")
             start_time = time.time()
-            self._hcp_uploader.upload_dir(self._config.linker_config.output_directory)
+            self._hcp_uploader.upload_dir(self._linker_output_directory)
             self._tape_register.set_status_finished(tape_name)
             duration = time.time() - start_time
-            delete_path(self._config.linker_config.output_directory, False)
+            delete_path(self._linker_output_directory, False)
             return duration
         except Exception as e:
             logger.error(f"Uploader failed, tape name: {tape_name} {str(e)}")
@@ -114,8 +116,8 @@ class UnitOfWorkProcessorImpl(UnitOfWorkProcessor):
 
     def _clean_working_dir(self) -> None:
         for working_dir in [
-            self._config.slicer_config.output_directory,
-            self._config.linker_config.output_directory
+            self._slicer_output_directory,
+            self._linker_output_directory
         ]:
             delete_path(working_dir, True)
         

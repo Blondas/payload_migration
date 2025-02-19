@@ -6,7 +6,7 @@ import yaml
 
 @dataclass
 class LoggingConfig:
-    log_file: Path
+    log_file_name: str
 
 @dataclass
 class DbConfig:
@@ -24,12 +24,12 @@ class TapeImportConfirmerConfig:
 @dataclass
 class SlicerConfig:
     slicer_path: Path
-    output_directory: Path 
-    log_file: Path
+    # output_directory: Path 
+    log_file_name: str
      
 @dataclass
 class LinkerConfig:
-    output_directory: Path
+    # output_directory: Path
     agid_name_lookup_table: str
     file_patterns: [str]
     
@@ -42,6 +42,7 @@ class UploaderConfig:
 @dataclass
 class PayloadMigrationConfig:
     tape_register_table: str
+    output_working_directory: Path
     logging_config: LoggingConfig
     db_config: DbConfig
     tape_import_confirmer_config: TapeImportConfirmerConfig
@@ -59,8 +60,9 @@ def load_config(config_path: Optional[str] = None) -> PayloadMigrationConfig:
 
     return PayloadMigrationConfig(
         tape_register_table=yaml_config['tape_register_table'],
+        output_working_directory=yaml_config['output_working_directory'],
         logging_config=LoggingConfig(
-            log_file=Path(yaml_config['logging_config']['log_file'])
+            log_file_name=yaml_config['logging_config']['log_file_name']
         ),
         db_config=DbConfig(
           database=yaml_config['db_config']['database'],
@@ -75,11 +77,11 @@ def load_config(config_path: Optional[str] = None) -> PayloadMigrationConfig:
         ),
         slicer_config=SlicerConfig(
             slicer_path=Path(yaml_config['slicer_config']['slicer_path']),
-            output_directory=Path(yaml_config['slicer_config']['output_directory']),
-            log_file=Path(yaml_config['slicer_config']['log_file'])
+            # output_directory=Path(yaml_config['slicer_config']['output_directory']),
+            log_file_name=yaml_config['slicer_config']['log_file_name']
         ),
         linker_config=LinkerConfig(
-            output_directory=Path(yaml_config['linker_config']['output_directory']),
+            # output_directory=Path(yaml_config['linker_config']['output_directory']),
             agid_name_lookup_table=yaml_config['linker_config']['agid_name_lookup_table'],
             file_patterns=yaml_config['linker_config']['file_patterns']
         ),
