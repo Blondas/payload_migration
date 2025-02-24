@@ -29,7 +29,10 @@ import argparse
 logger: Logger = logging.getLogger(__name__)
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='Unit of work of payload migration. It process one tape in multiple steps: tape mainframe import, slice, verify sliced, lin, HCP upload')
+    parser = argparse.ArgumentParser(description='An ETL (Extract, Transform, Load) Python package for payload migration processing, '
+                                                 'named "Unit of Work." It extracts by waiting for and confirming the existence of an imported tape, '
+                                                 'transforms by slicing the tape, performing sanity checks, and creating a future directory structure via symbolic links, '
+                                                 'and loads by uploading the processed data to S3.')
     parser.add_argument('--tape-name', type=str, required=True, help='Tape Name (vTapeFile)')
     return parser.parse_args()
     
