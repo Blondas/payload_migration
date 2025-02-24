@@ -3,8 +3,6 @@ from logging import Logger
 from pathlib import Path
 
 from unit_of_work.config.payload_migration_config import PayloadMigrationConfig, load_config
-from unit_of_work.db2.db2_connection_impl import DB2ConnectionImpl
-from unit_of_work.db2.db_connection import DBConnection
 from unit_of_work.linker.agid_name_lookup.agid_name_lookup import AgidNameLookup
 from unit_of_work.linker.agid_name_lookup.agid_name_lookup_impl import AgidNameLookupImpl
 from unit_of_work.linker.link_creator.link_creator import LinkCreator
@@ -25,6 +23,8 @@ from unit_of_work.tape_register.tape_register_impl import TapeRegisterImpl
 from unit_of_work.uploader.hcp_uploader import HcpUploader
 from unit_of_work.uploader.hcp_uploader_aws_cli import HcpUploaderAwsCliImpl
 import argparse
+from unit_of_work.db2.db2_connection_impl import DB2ConnectionImpl
+from unit_of_work.db2.db_connection import DBConnection
 
 logger: Logger = logging.getLogger(__name__)
 

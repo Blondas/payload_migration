@@ -1,3 +1,17 @@
+Metadata-Version: 2.1
+Name: unit-of-work
+Version: 0.1.0
+Summary: An ETL (Extract, Transform, Load) Python package for payload migration processing, named "Unit of Work." It extracts by waiting for and confirming the existence of an imported tape, transforms by slicing the tape, performing sanity checks, and creating a future directory structure via symbolic links, and loads by uploading the processed data to S3.
+Home-page: UNKNOWN
+Author: Krzysztof Nowakowski
+Author-email: knowakowski@pm.me
+License: UNKNOWN
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: AIX
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+
 # Unit of Work
 
 ## Overview
@@ -24,8 +38,6 @@ pip install -r requirements.txt
 To install the `unit_of_work` package locally from the source code (e.g., after cloning the repository), navigate to the root directory of the project (where `setup.py` is located) and run:
 ```bash
 pip install . --no-index --no-build-isolation
-ln -s /ars/home/lib/py3/bin/unit-of-work /ars/home/bin/unit-of-work
-ls -l /ars/home/bin 
 ```
 This will install the package and make it available for use in your Python environment.
 
@@ -42,3 +54,5 @@ python -m unit_of_work --tape-name <TAPE_NAME>
 
 ## Configuration
 The configuration file `payload_migration_config.yaml` should be placed in the `resources` directory. It contains all necessary settings for the ETL process.
+
+
