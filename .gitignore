@@ -4,3 +4,5 @@ __pycache__
 venv
 payload_migration_config.yaml
 log
+build
+unit_of_work.egg-info
