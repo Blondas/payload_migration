@@ -20,8 +20,8 @@ from unit_of_work.tape_import_confirmer.tape_import_confirmer import TapeImportC
 from unit_of_work.tape_import_confirmer.tape_import_confirmer_impl import TapeImportConfirmerImpl
 from unit_of_work.tape_register.tape_register import TapeRegister
 from unit_of_work.tape_register.tape_register_impl import TapeRegisterImpl
-from unit_of_work.uploader.hcp_uploader import HcpUploader
-from unit_of_work.uploader.hcp_uploader_aws_cli import HcpUploaderAwsCliImpl
+# from unit_of_work.uploader.hcp_uploader import HcpUploader
+# from unit_of_work.uploader.hcp_uploader_aws_cli import HcpUploaderAwsCliImpl
 import argparse
 from unit_of_work.db2.db2_connection_impl import DB2ConnectionImpl
 from unit_of_work.db2.db_connection import DBConnection
@@ -62,7 +62,6 @@ def main():
     )
     tape_register: TapeRegister = TapeRegisterImpl(db2_connection, payload_migration_config.tape_register_table)
     tape_import_confirmer: TapeImportConfirmer = TapeImportConfirmerImpl(
-        ready_extension=payload_migration_config.tape_import_confirmer_config.ready_extension,
         timeout=payload_migration_config.tape_import_confirmer_config.timeout,
         check_interval=payload_migration_config.tape_import_confirmer_config.check_interval
     )
@@ -81,11 +80,11 @@ def main():
         path_transformer = path_transformer
     )
     
-    hcp_uploader: HcpUploader = HcpUploaderAwsCliImpl(
-        s3_bucket = payload_migration_config.uploader_config.s3_bucket,
-        s3_prefix = payload_migration_config.uploader_config.s3_prefix,
-        verify_ssl = payload_migration_config.uploader_config.verify_ssl
-    )
+    # hcp_uploader: HcpUploader = HcpUploaderAwsCliImpl(
+    #     s3_bucket = payload_migration_config.uploader_config.s3_bucket,
+    #     s3_prefix = payload_migration_config.uploader_config.s3_prefix,
+    #     verify_ssl = payload_migration_config.uploader_config.verify_ssl
+    # )
     
     processor: UnitOfWorkProcessor = UnitOfWorkProcessorImpl(
         tape_import_confirmer = tape_import_confirmer,
@@ -93,7 +92,6 @@ def main():
         slicer = slicer,
         sanity_checker = sanity_checker,
         link_creator = link_creator,
-        hcp_uploader = hcp_uploader,
         slicer_output_directory=slicer_output_directory,
         slicer_log=slicer_log,
         sanity_checker_log=sanity_checker_log,

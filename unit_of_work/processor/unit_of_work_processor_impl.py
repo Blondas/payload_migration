@@ -1,4 +1,5 @@
 import logging
+import os.path
 from pathlib import Path
 import time
 from unit_of_work.linker.link_creator.link_creator import LinkCreator
@@ -7,7 +8,7 @@ from unit_of_work.sanity_checker.sanity_checker import SanityChecker
 from unit_of_work.slicer.slicer import Slicer
 from unit_of_work.tape_import_confirmer.tape_import_confirmer import TapeImportConfirmer
 from unit_of_work.tape_register.tape_register import TapeRegister
-from unit_of_work.uploader.hcp_uploader import HcpUploader
+from unit_of_work.tape_register.tape_status import TapeStatus
 from unit_of_work.utils.delete_path import delete_path
 
 logger = logging.getLogger(__name__)
@@ -20,7 +21,6 @@ class UnitOfWorkProcessorImpl(UnitOfWorkProcessor):
         slicer: Slicer,
         sanity_checker: SanityChecker,
         link_creator: LinkCreator,
-        hcp_uploader: HcpUploader,
         slicer_output_directory: Path,
         slicer_log: Path,
         sanity_checker_log: Path,
@@ -31,7 +31,6 @@ class UnitOfWorkProcessorImpl(UnitOfWorkProcessor):
         self._slicer: Slicer = slicer
         self._sanity_checker: SanityChecker = sanity_checker
         self._link_creator: LinkCreator = link_creator
-        self._hcp_uploader: HcpUploader = hcp_uploader
         self._slicer_output_directory: Path = slicer_output_directory
         self._slicer_log: Path = slicer_log
         self._sanity_checker_log: Path = sanity_checker_log
@@ -46,11 +45,12 @@ class UnitOfWorkProcessorImpl(UnitOfWorkProcessor):
             slicer_duration: float = self._run_slicer(tape_name, tape_location)
             sanity_checker_duration: float = self._run_sanity_checker(tape_name)
             linker_duration: float = self._run_linker(tape_name)
-            uploader_duration: float = self._run_uploader(tape_name)
+            
             self._clean_working_dir()
-            self._clean_tape_and_tape_confirmation_file(
-                tape_location, 
-                self._tape_import_confirmer.get_tape_confirmation_file(tape_name, tape_location)
+            # delete_path(tape_location, True)
+            self._rename_confirmation_file(
+                self._tape_import_confirmer.get_tape_confirmation_file(tape_name, tape_location, TapeStatus.EXPORTED),
+                self._tape_import_confirmer.get_tape_confirmation_file(tape_name, tape_location, TapeStatus.LINKED)
             )
 
             logger.info(f"Uploader finished, working directory deleted, tape name: {tape_name}")
@@ -62,19 +62,36 @@ class UnitOfWorkProcessorImpl(UnitOfWorkProcessor):
                 f"[slicer={slicer_duration}] "
                 f"[sanity_checker={sanity_checker_duration}] "
                 f"[linker={linker_duration}] "
-                f"[uploader={uploader_duration}]"
             )
 
         except Exception as e:
-            logger.error(f"Unit of work failed, tape name: {tape_name}, {str(e)}")
             self._tape_register.set_status_failed(tape_name)
+            
+            if os.path.exists(self._tape_import_confirmer.get_tape_confirmation_file(tape_name, tape_location, TapeStatus.EXPORTED)): 
+                self._rename_confirmation_file(
+                    self._tape_import_confirmer.get_tape_confirmation_file(tape_name, tape_location, TapeStatus.EXPORTED),
+                    self._tape_import_confirmer.get_tape_confirmation_file(tape_name, tape_location, TapeStatus.LINKED)
+                )
+            elif os.path.exists(self._tape_import_confirmer.get_tape_confirmation_file(tape_name, tape_location, TapeStatus.IN_PROGRESS)):
+                self._rename_confirmation_file(
+                    self._tape_import_confirmer.get_tape_confirmation_file(tape_name, tape_location,TapeStatus.IN_PROGRESS),
+                    self._tape_import_confirmer.get_tape_confirmation_file(tape_name, tape_location, TapeStatus.LINKED)
+                )
+            logger.error(f"Unit of work failed, tape name: {tape_name}, {str(e)}")
     
     def _run_tape_import_confirmer(self, tape_name: str, tape_location: Path) -> float:
         try:
             logger.info(f"Tape record confirmer starting, tape name: {tape_name}")
             start_time = time.time()
-            self._tape_import_confirmer.wait_for_confirmation(tape_name, tape_location)
+            self._tape_import_confirmer.wait_for_confirmation(tape_name, tape_location, TapeStatus.EXPORTED)
+            
+            # rename confirmation file & db
+            self._rename_confirmation_file(
+                self._tape_import_confirmer.get_tape_confirmation_file(tape_name, tape_location, TapeStatus.EXPORTED),
+                self._tape_import_confirmer.get_tape_confirmation_file(tape_name, tape_location, TapeStatus.IN_PROGRESS)
+            )
             self._tape_register.set_status_exported(tape_name)
+            
             return time.time() - start_time
         except Exception as e:
             logger.error(f"Tape record confirmer wait failed, tape name: {tape_name}, tape location: {tape_location}, {str(e)}")
@@ -124,19 +141,6 @@ class UnitOfWorkProcessorImpl(UnitOfWorkProcessor):
             logger.error(f"Linker failed, tape name: {tape_name} {str(e)}")
             raise
 
-    def _run_uploader(self, tape_name: str) -> float:
-        try:
-            logger.info(f"Uploader started, tape name: {tape_name}")
-            start_time = time.time()
-            self._hcp_uploader.upload_dir(self._linker_output_directory)
-            self._tape_register.set_status_finished(tape_name)
-            duration = time.time() - start_time
-            delete_path(self._linker_output_directory, False)
-            return duration
-        except Exception as e:
-            logger.error(f"Uploader failed, tape name: {tape_name} {str(e)}")
-            raise
-
     def _clean_working_dir(self) -> None:
         for working_dir in [
             self._slicer_output_directory,
@@ -144,9 +148,19 @@ class UnitOfWorkProcessorImpl(UnitOfWorkProcessor):
         ]:
             delete_path(working_dir, True)
         
-    def _clean_tape_and_tape_confirmation_file(self, tape: Path, tape_confirmation_file: Path) -> None:
+    def _clean_tape(self, tape: Path, tape_confirmation_file: Path) -> None:
         for working_dir in [
             tape,
             tape_confirmation_file
         ]:
             delete_path(working_dir, True)
+            
+    def _rename_confirmation_file(self, rename_from: Path, rename_to: Path):
+        if os.path.exists(rename_from):
+            os.rename(rename_from, rename_to)
+            logger.info(f'Tape confirmation file renamed from {rename_from} -> {rename_to}')
+        else:
+            err_msg: str = f'Tape confirmation file cannot be renamed: {rename_from} -> {rename_to}'
+            logger.error(err_msg)
+            raise FileNotFoundError(err_msg)
+            
