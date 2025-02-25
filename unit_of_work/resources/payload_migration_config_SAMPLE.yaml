@@ -8,7 +8,6 @@ db_config:
   
 tape_import_confirmer_config:
   tape_directory: '/foo/tapes'
-  ready_extension: '.exported'
   timeout: 60
   check_interval: 1
   

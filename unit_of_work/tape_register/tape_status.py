@@ -10,6 +10,7 @@ class TapeStatus(Enum):
     LINKED: str = "linked"
     FINISHED: str = "finished"
     FAILED: str = "failed"
+    IN_PROGRESS: str = "in progress"
 
     def __str__(self) -> str:
         return self.value
